@@ -5,7 +5,19 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bong Studio - Compresor PPT</title>
     <meta name="description" content="Comprime presentaciones PowerPoint online. Reduce hasta 70% del tamaño manteniendo la calidad. Gratis y sin registro.">
+    <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=satoshi@700,600,500,400&display=swap">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/feather-icons"></script>
     <style>
+        :root {
+            --bong-verde-oscuro: #004831;
+            --bong-verde: #20C683;
+            --bong-gris: #95B5A9;
+            --bong-gris-oscuro: #182F25;
+        }
+        
         * {
             margin: 0;
             padding: 0;
@@ -13,8 +25,8 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', system-ui, sans-serif;
-            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            font-family: 'Satoshi', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: var(--bong-verde-oscuro);
             color: #ffffff;
             min-height: 100vh;
             display: flex;
@@ -37,35 +49,38 @@
 
         .logo {
             font-size: 48px;
-            font-weight: 800;
-            background: linear-gradient(135deg, #00ff88 0%, #00ddff 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            font-weight: 600;
+            color: var(--bong-verde);
             margin-bottom: 10px;
-            letter-spacing: -1px;
+            letter-spacing: -0.05em;
         }
 
         .subtitle {
-            color: #888;
-            font-size: 16px;
+            color: var(--bong-gris);
+            font-size: 14px;
             margin-bottom: 30px;
+            font-family: 'Space Mono', monospace;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
         }
 
         .info-badge {
             display: inline-block;
-            background: rgba(0, 255, 136, 0.1);
-            color: #00ff88;
+            background: rgba(32, 198, 131, 0.15);
+            color: var(--bong-verde);
             padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: 600;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 700;
+            font-family: 'Space Mono', monospace;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
         /* Drop Zone */
         .drop-zone {
-            background: #2a2a2a;
-            border: 3px dashed #444;
+            background: rgba(24, 47, 37, 0.5);
+            border: 2px dashed rgba(32, 198, 131, 0.3);
             border-radius: 20px;
             padding: 60px 40px;
             text-align: center;
@@ -75,29 +90,38 @@
         }
 
         .drop-zone:hover {
-            border-color: #00ff88;
-            background: #333;
+            border-color: var(--bong-verde);
+            background: rgba(24, 47, 37, 0.7);
         }
 
         .drop-zone.dragging {
-            border-color: #00ff88;
-            background: rgba(0, 255, 136, 0.1);
+            border-color: var(--bong-verde);
+            background: rgba(32, 198, 131, 0.1);
             transform: scale(1.02);
         }
 
         .drop-zone-icon {
-            font-size: 64px;
             margin-bottom: 20px;
+            color: var(--bong-verde);
+        }
+        
+        .drop-zone-icon i {
+            display: block;
+            margin: 0 auto;
         }
 
         .drop-zone h2 {
             font-size: 24px;
             margin-bottom: 10px;
+            letter-spacing: -0.02em;
         }
 
         .drop-zone p {
-            color: #888;
+            color: var(--bong-gris);
             font-size: 14px;
+            font-family: 'Space Mono', monospace;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
         .file-input {
@@ -106,7 +130,7 @@
 
         /* File Info */
         .file-info {
-            background: #2a2a2a;
+            background: rgba(24, 47, 37, 0.5);
             border-radius: 15px;
             padding: 20px;
             margin-bottom: 30px;
@@ -120,30 +144,34 @@
         .file-name {
             font-size: 18px;
             font-weight: 600;
-            color: #00ff88;
+            color: var(--bong-verde);
             margin-bottom: 5px;
         }
 
         .file-size {
-            color: #888;
-            font-size: 14px;
+            color: var(--bong-gris);
+            font-size: 12px;
+            font-family: 'Space Mono', monospace;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
         /* Quality Slider */
         .quality-control {
-            background: #2a2a2a;
+            background: rgba(24, 47, 37, 0.5);
             border-radius: 15px;
             padding: 30px;
             margin-bottom: 30px;
         }
 
         .quality-label {
-            font-size: 14px;
-            font-weight: 600;
-            color: #888;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--bong-gris);
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.1em;
             margin-bottom: 15px;
+            font-family: 'Space Mono', monospace;
         }
 
         .quality-value {
@@ -153,8 +181,8 @@
             transition: color 0.3s ease;
         }
 
-        .quality-value.high { color: #00ddff; }
-        .quality-value.recommended { color: #00ff88; }
+        .quality-value.high { color: var(--bong-verde); }
+        .quality-value.recommended { color: var(--bong-verde); }
         .quality-value.medium { color: #ffaa00; }
         .quality-value.low { color: #ff6666; }
 
@@ -162,7 +190,7 @@
             width: 100%;
             height: 8px;
             border-radius: 5px;
-            background: #444;
+            background: rgba(24, 47, 37, 0.8);
             outline: none;
             -webkit-appearance: none;
             margin-bottom: 15px;
@@ -174,58 +202,62 @@
             width: 24px;
             height: 24px;
             border-radius: 50%;
-            background: #00ff88;
+            background: var(--bong-verde);
             cursor: pointer;
-            box-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+            box-shadow: 0 0 10px rgba(32, 198, 131, 0.5);
         }
 
         .slider::-moz-range-thumb {
             width: 24px;
             height: 24px;
             border-radius: 50%;
-            background: #00ff88;
+            background: var(--bong-verde);
             cursor: pointer;
             border: none;
-            box-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+            box-shadow: 0 0 10px rgba(32, 198, 131, 0.5);
         }
 
         .quality-labels {
             display: flex;
             justify-content: space-between;
-            font-size: 12px;
-            color: #666;
+            font-size: 10px;
+            color: var(--bong-gris);
+            font-family: 'Space Mono', monospace;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
         /* Compress Button */
         .compress-btn {
             width: 100%;
-            padding: 20px;
-            font-size: 18px;
+            padding: 18px 24px;
+            font-size: 13px;
             font-weight: 700;
-            color: #1a1a1a;
-            background: linear-gradient(135deg, #00ff88 0%, #00ddff 100%);
+            color: var(--bong-verde-oscuro);
+            background: var(--bong-verde);
             border: none;
-            border-radius: 15px;
+            border-radius: 999px;
             cursor: pointer;
             transition: all 0.3s ease;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.1em;
             margin-bottom: 30px;
+            font-family: 'Space Mono', monospace;
         }
 
         .compress-btn:hover:not(:disabled) {
             transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(0, 255, 136, 0.3);
+            box-shadow: 0 10px 30px rgba(32, 198, 131, 0.3);
         }
 
         .compress-btn:disabled {
-            opacity: 0.5;
+            opacity: 0.3;
             cursor: not-allowed;
         }
 
         /* Progress */
         .progress-container {
-            background: #2a2a2a;
+            background: rgba(24, 47, 37, 0.5);
             border-radius: 15px;
             padding: 30px;
             margin-bottom: 30px;
@@ -237,35 +269,39 @@
         }
 
         .progress-label {
-            font-size: 14px;
-            color: #888;
+            font-size: 11px;
+            color: var(--bong-gris);
             margin-bottom: 10px;
+            font-family: 'Space Mono', monospace;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
         .progress-bar {
             width: 100%;
             height: 10px;
-            background: #444;
-            border-radius: 10px;
+            background: rgba(24, 47, 37, 0.8);
+            border-radius: 999px;
             overflow: hidden;
             margin-bottom: 15px;
         }
 
         .progress-fill {
             height: 100%;
-            background: linear-gradient(90deg, #00ff88 0%, #00ddff 100%);
+            background: var(--bong-verde);
             width: 0%;
             transition: width 0.3s ease;
         }
 
         .progress-text {
-            color: #00ff88;
-            font-weight: 600;
+            color: var(--bong-verde);
+            font-weight: 700;
+            font-family: 'Space Mono', monospace;
         }
 
         /* Results */
         .results {
-            background: #2a2a2a;
+            background: rgba(24, 47, 37, 0.5);
             border-radius: 15px;
             padding: 30px;
             display: none;
@@ -280,6 +316,7 @@
             font-weight: 700;
             margin-bottom: 20px;
             text-align: center;
+            letter-spacing: -0.02em;
         }
 
         .results-stats {
@@ -292,42 +329,44 @@
         .stat {
             text-align: center;
             padding: 20px;
-            background: #333;
+            background: rgba(24, 47, 37, 0.8);
             border-radius: 10px;
         }
 
         .stat-label {
-            font-size: 12px;
-            color: #888;
+            font-size: 10px;
+            color: var(--bong-gris);
             margin-bottom: 5px;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.1em;
+            font-family: 'Space Mono', monospace;
         }
 
         .stat-value {
             font-size: 24px;
             font-weight: 700;
-            color: #00ff88;
+            color: var(--bong-verde);
         }
 
         .download-btn {
             width: 100%;
-            padding: 20px;
-            font-size: 18px;
+            padding: 18px 24px;
+            font-size: 13px;
             font-weight: 700;
-            color: #1a1a1a;
-            background: linear-gradient(135deg, #00ff88 0%, #00ddff 100%);
+            color: var(--bong-verde-oscuro);
+            background: var(--bong-verde);
             border: none;
-            border-radius: 15px;
+            border-radius: 999px;
             cursor: pointer;
             transition: all 0.3s ease;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.1em;
+            font-family: 'Space Mono', monospace;
         }
 
         .download-btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(0, 255, 136, 0.3);
+            box-shadow: 0 10px 30px rgba(32, 198, 131, 0.3);
         }
 
         /* Footer */
@@ -335,17 +374,26 @@
             text-align: center;
             margin-top: auto;
             padding: 40px 20px;
-            color: #666;
-            font-size: 14px;
+            color: var(--bong-gris);
+            font-size: 11px;
+            font-family: 'Space Mono', monospace;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
         footer a {
-            color: #00ff88;
+            color: var(--bong-verde);
             text-decoration: none;
         }
 
         footer a:hover {
             text-decoration: underline;
+        }
+        
+        footer p:last-child {
+            font-size: 9px;
+            text-transform: none;
+            letter-spacing: normal;
         }
 
         /* Responsive */
@@ -367,14 +415,19 @@
 <body>
     <div class="container">
         <header>
-            <div class="logo">COMPRESOR PPT</div>
+            <div class="logo">Compresor PPT</div>
             <p class="subtitle">Bong Studio</p>
-            <div class="info-badge">✨ Gratis • Sin registro • Procesamiento local</div>
+            <div class="info-badge">
+                <i data-feather="star" style="width: 16px; height: 16px; display: inline-block; vertical-align: middle; margin-right: 6px;"></i>
+                Gratis • Sin registro • Procesamiento local
+            </div>
         </header>
 
         <!-- Drop Zone -->
         <div class="drop-zone" id="dropZone">
-            <div class="drop-zone-icon">📁</div>
+            <div class="drop-zone-icon">
+                <i data-feather="upload" style="width: 64px; height: 64px; stroke-width: 1.5;"></i>
+            </div>
             <h2>Arrastrá tu presentación acá</h2>
             <p>o hacé click para seleccionar</p>
             <input type="file" id="fileInput" class="file-input" accept=".pptx">
@@ -399,7 +452,8 @@
 
         <!-- Compress Button -->
         <button class="compress-btn" id="compressBtn" disabled>
-            🚀 Comprimir Presentación
+            <i data-feather="zap" style="width: 20px; height: 20px; display: inline-block; vertical-align: middle; margin-right: 8px;"></i>
+            Comprimir Presentación
         </button>
 
         <!-- Progress -->
@@ -413,7 +467,10 @@
 
         <!-- Results -->
         <div class="results" id="results">
-            <h3 class="results-title">✅ Compresión completada</h3>
+            <h3 class="results-title">
+                <i data-feather="check-circle" style="width: 28px; height: 28px; display: inline-block; vertical-align: middle; margin-right: 8px;"></i>
+                Compresión completada
+            </h3>
             <div class="results-stats">
                 <div class="stat">
                     <div class="stat-label">Tamaño original</div>
@@ -429,12 +486,15 @@
                 </div>
             </div>
             <button class="download-btn" id="downloadBtn">
-                💾 Descargar presentación comprimida
+                <i data-feather="download" style="width: 20px; height: 20px; display: inline-block; vertical-align: middle; margin-right: 8px;"></i>
+                Descargar presentación comprimida
             </button>
         </div>
 
         <footer>
-            <p>Hecho con ❤️ por <a href="https://github.com/tu-usuario" target="_blank">Bong Studio</a></p>
+            <p>
+                Hecho con <i data-feather="heart" style="width: 16px; height: 16px; display: inline-block; vertical-align: middle; fill: var(--bong-verde); stroke: var(--bong-verde);"></i> por <a href="https://bongstudio.ar" target="_blank">Bong Studio</a>
+            </p>
             <p style="margin-top: 10px; font-size: 12px;">
                 Todo el procesamiento se hace en tu navegador. Tus archivos nunca se suben a ningún servidor.
             </p>
@@ -445,5 +505,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     
     <script src="app.js"></script>
+    
+    <!-- Initialize Feather Icons -->
+    <script>
+        feather.replace();
+    </script>
 </body>
 </html>
