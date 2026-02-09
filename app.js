@@ -33,6 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const dropZoneSubtitle = document.getElementById('dropZoneSubtitle');
     const pdfInfoBadge = document.querySelector('.pdf-info');
     const selectorBtns = document.querySelectorAll('.selector-btn');
+    const qualityControl = document.getElementById('qualityControl');
     
     // PDF Advanced Controls
     const pdfAdvancedControls = document.getElementById('pdfAdvancedControls');
@@ -106,6 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
             compressBtn.innerHTML = '<i data-feather="zap" style="width: 20px; height: 20px; display: inline-block; vertical-align: middle; margin-right: 8px;"></i>Comprimir Presentación';
             pdfInfoBadge.style.display = 'none';
             pdfAdvancedControls.style.display = 'none';
+            qualityControl.style.display = 'block'; // Mostrar slider para PPT
         } else {
             fileTypeLabel.textContent = 'PDF';
             fileInput.accept = '.pdf';
@@ -113,6 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
             compressBtn.innerHTML = '<i data-feather="zap" style="width: 20px; height: 20px; display: inline-block; vertical-align: middle; margin-right: 8px;"></i>Comprimir PDF';
             pdfInfoBadge.style.display = 'inline-block';
             pdfAdvancedControls.style.display = 'block';
+            qualityControl.style.display = 'none'; // Ocultar slider para PDF
         }
         
         console.log('Disparando evento input en slider');
@@ -166,7 +169,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 qualityValue.textContent = value + '% (Pantalla - 72 DPI)';
             } else if (value <= 84) {
                 qualityValue.classList.add('recommended');
-                qualityValue.textContent = value + '% (eBook - 150 DPI ⭐)';
+                qualityValue.innerHTML = value + '% (eBook - 150 DPI <i data-feather="star" style="width: 14px; height: 14px; display: inline-block; vertical-align: middle; margin-left: 2px; fill: #20C683; stroke: #20C683;"></i>)';
+                feather.replace();
             } else if (value <= 92) {
                 qualityValue.classList.add('high');
                 qualityValue.textContent = value + '% (Imprimir - 300 DPI)';
@@ -180,7 +184,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 qualityValue.textContent = value + '% (Máxima calidad)';
             } else if (value >= 85) {
                 qualityValue.classList.add('recommended');
-                qualityValue.textContent = value + '% (Recomendado ⭐)';
+                qualityValue.innerHTML = value + '% (Recomendado <i data-feather="star" style="width: 14px; height: 14px; display: inline-block; vertical-align: middle; margin-left: 2px; fill: #20C683; stroke: #20C683;"></i>)';
+                feather.replace();
             } else if (value >= 75) {
                 qualityValue.classList.add('medium');
                 qualityValue.textContent = value + '% (Buena compresión)';

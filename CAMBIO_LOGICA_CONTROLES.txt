@@ -1,0 +1,224 @@
+═══════════════════════════════════════════════════════════════════════
+  CAMBIO EN LÓGICA DE CONTROLES - SLIDER vs OPCIONES AVANZADAS
+═══════════════════════════════════════════════════════════════════════
+
+🎯 PROBLEMA ORIGINAL:
+
+Había dos controles que parecían hacer lo mismo:
+1. Slider arriba: "67% (Pantalla - 72 DPI)"
+2. Botones DPI abajo: [72] [150] [300]
+
+Esto causaba confusión: ¿Cuál manda? ¿Son lo mismo?
+
+═══════════════════════════════════════════════════════════════════════
+
+✅ SOLUCIÓN IMPLEMENTADA:
+
+Ahora los controles son MUTUAMENTE EXCLUYENTES según el tipo de archivo:
+
+┌─────────────────────────────────────────────────────────────────────┐
+│ TIPO PPT - Mostrar SOLO slider                                      │
+└─────────────────────────────────────────────────────────────────────┘
+
+VISIBLE:
+✅ Slider de calidad (60-95%)
+   └─ Controla calidad de compresión JPEG
+
+OCULTO:
+❌ Opciones avanzadas PDF
+❌ Selector de DPI
+❌ Checkboxes de preservación
+
+LÓGICA:
+- Slider determina calidad JPEG (0.60 - 0.95)
+- Más alto = mejor calidad, menos compresión
+- Aplica a todas las imágenes que se convierten a JPEG
+
+
+┌─────────────────────────────────────────────────────────────────────┐
+│ TIPO PDF - Mostrar SOLO opciones avanzadas                          │
+└─────────────────────────────────────────────────────────────────────┘
+
+VISIBLE:
+✅ Modo de compresión (Solo imágenes / Completa)
+✅ Selector DPI (72 / 150 / 300)
+✅ Checkboxes de preservación
+
+OCULTO:
+❌ Slider de calidad
+
+LÓGICA:
+- Selector DPI determina resolución de imágenes
+- Modo determina si solo comprime imágenes o todo
+- Checkboxes controlan qué preservar
+
+═══════════════════════════════════════════════════════════════════════
+
+🎨 CAMBIO VISUAL:
+
+ANTES (PPT):                     DESPUÉS (PPT):
+┌──────────────────────┐         ┌──────────────────────┐
+│ Slider 85%           │    →    │ Slider 85%           │
+│ [Opciones avanzadas] │         │                      │
+│ DPI: 72/150/300      │         │                      │
+│ ✓ Checkboxes        │         │                      │
+└──────────────────────┘         └──────────────────────┘
+    ❌ Confuso                       ✅ Claro
+
+
+ANTES (PDF):                     DESPUÉS (PDF):
+┌──────────────────────┐         ┌──────────────────────┐
+│ Slider 85%           │         │                      │
+│ [Opciones avanzadas] │    →    │ [Opciones avanzadas] │
+│ DPI: 72/150/300      │         │ DPI: 72/150/300      │
+│ ✓ Checkboxes        │         │ ✓ Checkboxes        │
+└──────────────────────┘         └──────────────────────┘
+    ❌ Confuso                       ✅ Claro
+
+═══════════════════════════════════════════════════════════════════════
+
+🔧 IMPLEMENTACIÓN TÉCNICA:
+
+JavaScript - switchFileType():
+```javascript
+if (type === 'ppt') {
+    qualityControl.style.display = 'block';    // Mostrar slider
+    pdfAdvancedControls.style.display = 'none'; // Ocultar avanzadas
+} else {
+    qualityControl.style.display = 'none';      // Ocultar slider
+    pdfAdvancedControls.style.display = 'block'; // Mostrar avanzadas
+}
+```
+
+HTML:
+```html
+<!-- Slider (solo PPT) -->
+<div class="quality-control" id="qualityControl">
+    <input type="range" min="60" max="95" value="85">
+</div>
+
+<!-- Opciones avanzadas (solo PDF) -->
+<div class="pdf-advanced-controls" id="pdfAdvancedControls">
+    <!-- Modo, DPI, Checkboxes -->
+</div>
+```
+
+═══════════════════════════════════════════════════════════════════════
+
+⭐ REEMPLAZO DE EMOJI POR ICONOS
+
+ANTES:
+- "Recomendado ⭐"
+- "eBook - 150 DPI ⭐"
+
+DESPUÉS:
+- "Recomendado [icono estrella]"
+- "eBook - 150 DPI [icono estrella]"
+
+IMPLEMENTACIÓN:
+```html
+<i data-feather="star" 
+   style="width: 14px; 
+          height: 14px; 
+          display: inline-block; 
+          vertical-align: middle; 
+          margin-left: 2px; 
+          fill: #20C683; 
+          stroke: #20C683;">
+</i>
+```
+
+BENEFICIOS:
+✅ Consistencia visual con resto de iconos (Feather Icons)
+✅ Color verde Bong (#20C683)
+✅ Tamaño controlable
+✅ No depende de fonts del sistema
+
+═══════════════════════════════════════════════════════════════════════
+
+📊 COMPARACIÓN: SLIDER vs DPI
+
+SLIDER (PPT):
+┌─────────────────────────────────────────────────────────────────────┐
+│ Controla: Calidad de compresión JPEG                                │
+│ Rango: 60-95 (continuo)                                             │
+│ Unidad: Porcentaje de calidad                                       │
+│ Aplica a: Imágenes que se convierten a JPEG                         │
+│ Ejemplo: 85% = comprimir JPEG a calidad 0.85                        │
+└─────────────────────────────────────────────────────────────────────┘
+
+DPI (PDF):
+┌─────────────────────────────────────────────────────────────────────┐
+│ Controla: Resolución de imágenes                                    │
+│ Rango: 72, 150, 300 (discreto)                                      │
+│ Unidad: Puntos por pulgada                                          │
+│ Aplica a: Todas las imágenes del PDF                                │
+│ Ejemplo: 150 DPI = reducir imágenes a 150 puntos por pulgada        │
+└─────────────────────────────────────────────────────────────────────┘
+
+SON CONCEPTOS DIFERENTES:
+- Slider = qué tan bien se comprime un JPEG
+- DPI = cuántos píxeles tiene la imagen
+
+Por eso necesitan controles separados.
+
+═══════════════════════════════════════════════════════════════════════
+
+✅ BENEFICIOS DEL CAMBIO:
+
+1. CLARIDAD:
+   - Un solo control por tipo de archivo
+   - No más confusión sobre "cuál manda"
+
+2. SIMPLICIDAD:
+   - PPT: Solo slider (concepto familiar)
+   - PDF: Opciones específicas para PDF
+
+3. ESPACIO:
+   - Menos elementos en pantalla
+   - Interfaz más limpia
+
+4. UX MEJORADA:
+   - Cambiar entre PPT/PDF muestra controles relevantes
+   - No hay controles "fantasma" que no hacen nada
+
+5. PROFESIONAL:
+   - Iconos consistentes (Feather)
+   - No más emojis mezclados
+
+═══════════════════════════════════════════════════════════════════════
+
+🎯 FLUJO DE USUARIO:
+
+PARA PPT:
+1. Seleccionar PPT en selector
+2. Ver slider de calidad
+3. Ajustar 60-95% según necesidad
+4. Subir archivo y comprimir
+
+PARA PDF:
+1. Seleccionar PDF en selector
+2. Ver opciones avanzadas automáticamente
+3. Elegir modo (Solo imágenes ⭐ recomendado)
+4. Seleccionar DPI (150 ⭐ recomendado)
+5. Verificar checkboxes están activados
+6. Subir archivo y comprimir
+
+═══════════════════════════════════════════════════════════════════════
+
+🧪 TESTING CHECKLIST:
+
+[ ] Cambiar a PPT → Slider visible, avanzadas ocultas
+[ ] Cambiar a PDF → Avanzadas visibles, slider oculto
+[ ] Slider en PPT funciona correctamente
+[ ] DPI en PDF funciona correctamente
+[ ] Iconos de estrella se renderizan bien
+[ ] Sin warnings en consola
+[ ] Iconos tienen color verde Bong
+[ ] Feather.replace() se llama después de innerHTML
+
+═══════════════════════════════════════════════════════════════════════
+
+¡Ahora la interfaz es clara y no hay confusión sobre qué control usar! 🚀
+
+═══════════════════════════════════════════════════════════════════════
