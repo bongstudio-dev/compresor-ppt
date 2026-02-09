@@ -608,6 +608,33 @@
         .checkbox-label span {
             flex: 1;
         }
+
+        .preservation-note {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px;
+            margin-bottom: 12px;
+            background: rgba(32, 198, 131, 0.1);
+            border: 1px solid rgba(32, 198, 131, 0.3);
+            border-radius: 8px;
+            font-size: 13px;
+            color: #95B5A9;
+        }
+
+        .preservation-note i {
+            flex-shrink: 0;
+            color: #20C683;
+        }
+
+        .checkbox-label.disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .checkbox-label.disabled input[type="checkbox"] {
+            cursor: not-allowed;
+        }
     </style>
 </head>
 <body>
@@ -700,6 +727,10 @@
 
                 <div class="pdf-preservation">
                     <label class="control-label">PRESERVAR</label>
+                    <div class="preservation-note" id="preservationNote" style="display: none;">
+                        <i data-feather="info" style="width: 16px; height: 16px;"></i>
+                        <span>El modo de optimización completa comprime todo para máxima reducción</span>
+                    </div>
                     <label class="checkbox-label">
                         <input type="checkbox" id="preserveText" checked>
                         <span>✓ Texto editable (no rasterizar)</span>

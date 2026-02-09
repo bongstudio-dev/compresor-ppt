@@ -42,6 +42,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const preserveText = document.getElementById('preserveText');
     const preserveLinks = document.getElementById('preserveLinks');
     const preserveLayout = document.getElementById('preserveLayout');
+    const preservationNote = document.getElementById('preservationNote');
+    const checkboxLabels = document.querySelectorAll('.checkbox-label');
     
     let pdfCompressionMode = 'images-only'; // 'images-only' or 'full'
     let pdfDPI = 150; // 72, 150, or 300
@@ -67,6 +69,24 @@ document.addEventListener('DOMContentLoaded', () => {
             
             modeButtons.forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
+            
+            // Enable/disable checkboxes based on mode
+            if (mode === 'full') {
+                // Optimización completa: deshabilitar checkboxes
+                preserveText.disabled = true;
+                preserveLinks.disabled = true;
+                preserveLayout.disabled = true;
+                checkboxLabels.forEach(label => label.classList.add('disabled'));
+                preservationNote.style.display = 'flex';
+                feather.replace();
+            } else {
+                // Solo imágenes: habilitar checkboxes
+                preserveText.disabled = false;
+                preserveLinks.disabled = false;
+                preserveLayout.disabled = false;
+                checkboxLabels.forEach(label => label.classList.remove('disabled'));
+                preservationNote.style.display = 'none';
+            }
             
             console.log('PDF Mode cambiado a:', mode);
         });
@@ -537,9 +557,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 options: {
                     dpi: pdfDPI,
                     mode: pdfCompressionMode,
-                    preserveText: preserveText.checked,
-                    preserveLinks: preserveLinks.checked,
-                    preserveLayout: preserveLayout.checked
+                    // En modo 'full', ignorar checkboxes y comprimir todo
+                    preserveText: pdfCompressionMode === 'images-only' ? preserveText.checked : false,
+                    preserveLinks: pdfCompressionMode === 'images-only' ? preserveLinks.checked : false,
+                    preserveLayout: pdfCompressionMode === 'images-only' ? preserveLayout.checked : false
                 }
             });
             
