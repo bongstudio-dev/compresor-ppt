@@ -1,0 +1,396 @@
+═══════════════════════════════════════════════════════════════════════
+  GUÍA DE OPCIONES AVANZADAS - COMPRESIÓN PDF
+  Cómo funcionan los controles y cuándo usarlos
+═══════════════════════════════════════════════════════════════════════
+
+🎯 MODOS DE COMPRESIÓN
+
+┌─────────────────────────────────────────────────────────────────────┐
+│ MODO: SOLO COMPRIMIR IMÁGENES (⭐ RECOMENDADO)                     │
+└─────────────────────────────────────────────────────────────────────┘
+
+QUÉ HACE:
+✅ Comprime SOLO las imágenes del PDF
+✅ Reduce DPI según tu selección (72, 150, 300)
+✅ NO toca texto, fuentes, ni estructura
+✅ NO reordena objetos internos
+
+CUÁNDO USAR:
+• PDFs con layouts complejos o precisos
+• Manuales de marca con tipografía específica
+• Prototipos con posicionamiento exacto
+• PDFs interactivos con links
+• Cuando tenés problemas con "se rompe el layout"
+
+REDUCCIÓN ESPERADA:
+• 40-60% de reducción (dependiendo de cantidad de imágenes)
+
+PARÁMETROS GHOSTSCRIPT:
+-dCompressPages=false
+-dCompressFonts=false
+-dDetectDuplicateImages=false
+-dColorImageResolution=[DPI seleccionado]
+
+
+┌─────────────────────────────────────────────────────────────────────┐
+│ MODO: OPTIMIZACIÓN COMPLETA                                         │
+└─────────────────────────────────────────────────────────────────────┘
+
+QUÉ HACE:
+✅ Comprime imágenes
+✅ Comprime streams de contenido
+✅ Optimiza fuentes (subset)
+✅ Detecta y elimina duplicados
+✅ Reordena estructura interna
+
+CUÁNDO USAR:
+• PDFs con layouts simples
+• Documentos de texto con pocas imágenes
+• Cuando necesitás máxima compresión
+• PDFs sin requisitos de diseño específicos
+
+REDUCCIÓN ESPERADA:
+• 60-80% de reducción
+
+RIESGO:
+⚠️ Puede romper layouts complejos
+⚠️ Puede alterar posicionamiento de elementos
+
+PARÁMETROS GHOSTSCRIPT:
+-dCompressPages=true
+-dCompressFonts=true
+-dDetectDuplicateImages=true
+
+═══════════════════════════════════════════════════════════════════════
+
+📐 SELECTOR DE DPI
+
+┌───────────┬─────────────┬──────────────┬────────────────────────────┐
+│ DPI       │ Uso         │ Compresión   │ Cuándo usar                │
+├───────────┼─────────────┼──────────────┼────────────────────────────┤
+│ 72 DPI    │ Pantalla    │ Máxima       │ Solo visualización web     │
+│           │             │ (~80%)       │ NO imprimir                │
+├───────────┼─────────────┼──────────────┼────────────────────────────┤
+│ 150 DPI ⭐│ Recomendado │ Balance      │ Pantalla + impresión casera│
+│           │             │ (~70%)       │ Uso general                │
+├───────────┼─────────────┼──────────────┼────────────────────────────┤
+│ 300 DPI   │ Imprenta    │ Mínima       │ Impresión profesional      │
+│           │             │ (~40%)       │ Calidad máxima             │
+└───────────┴─────────────┴──────────────┴────────────────────────────┘
+
+EXPLICACIÓN:
+DPI (Dots Per Inch) define la resolución de las imágenes.
+• 72 DPI = 72 puntos por pulgada → imágenes más pequeñas
+• 300 DPI = 300 puntos por pulgada → imágenes más detalladas
+
+Las imágenes se "downsamplea" (reducen) al DPI seleccionado.
+Si una imagen ya está a 150 DPI y seleccionás 150 DPI, NO se toca.
+Si una imagen está a 600 DPI y seleccionás 150 DPI, se reduce.
+
+═══════════════════════════════════════════════════════════════════════
+
+🛡️ OPCIONES DE PRESERVACIÓN
+
+┌─────────────────────────────────────────────────────────────────────┐
+│ ✓ TEXTO EDITABLE (NO RASTERIZAR)                                    │
+└─────────────────────────────────────────────────────────────────────┘
+
+QUÉ HACE:
+✅ Embedea todas las fuentes completas
+✅ NO hace subset de fuentes
+✅ Garantiza que el texto sigue siendo texto
+
+CUÁNDO ACTIVAR:
+• Siempre (recomendado)
+• Especialmente si el PDF tiene texto seleccionable
+• Si necesitás copiar/pegar texto del PDF
+
+CUÁNDO DESACTIVAR:
+• Nunca (a menos que quieras rasterizar intencionalmente)
+
+PARÁMETROS GHOSTSCRIPT:
+-dEmbedAllFonts=true
+-dSubsetFonts=false
+
+SIN ESTA OPCIÓN:
+Si Ghostscript no encuentra una fuente, puede RASTERIZAR el texto
+(convertirlo en imagen), lo que hace que no puedas seleccionarlo.
+
+
+┌─────────────────────────────────────────────────────────────────────┐
+│ ✓ LINKS Y ANOTACIONES                                               │
+└─────────────────────────────────────────────────────────────────────┘
+
+QUÉ PRESERVA:
+✅ Hyperlinks (externos e internos)
+✅ Anotaciones y comentarios
+✅ Marcadores (bookmarks)
+✅ Formularios interactivos
+
+CUÁNDO ACTIVAR:
+• Prototipos con links a Figma
+• Documentos con tabla de contenidos clickeable
+• PDFs interactivos
+• Manuales con referencias cruzadas
+
+CUÁNDO DESACTIVAR:
+• PDF es solo para imprimir
+• No tiene links ni anotaciones
+
+PARÁMETROS GHOSTSCRIPT:
+-dPreserveAnnots=true
+
+
+┌─────────────────────────────────────────────────────────────────────┐
+│ ✓ ESTRUCTURA DE LAYOUT                                              │
+└─────────────────────────────────────────────────────────────────────┘
+
+QUÉ PRESERVA:
+✅ Información de halftone (semitonos)
+✅ Orientación original de páginas
+✅ Configuraciones de sobreimpresión
+
+CUÁNDO ACTIVAR:
+• Layouts complejos con posicionamiento exacto
+• PDFs de diseño profesional
+• Cuando ves que "se rompe el layout"
+
+CUÁNDO DESACTIVAR:
+• PDFs simples de texto
+• Documentos sin requisitos de diseño
+
+PARÁMETROS GHOSTSCRIPT:
+-dPreserveHalftoneInfo=true
+-dAutoRotatePages=/None
+-dPreserveOverprintSettings=true
+
+═══════════════════════════════════════════════════════════════════════
+
+🎯 CONFIGURACIONES RECOMENDADAS POR CASO DE USO
+
+┌─────────────────────────────────────────────────────────────────────┐
+│ CASO: MANUAL DE MARCA DE PROFERTIL (125 páginas, links a Figma)    │
+└─────────────────────────────────────────────────────────────────────┘
+
+MODO: Solo comprimir imágenes ⭐
+DPI: 150 DPI
+PRESERVAR:
+✅ Texto editable
+✅ Links y anotaciones
+✅ Estructura de layout
+
+RESULTADO:
+• 32 MB → ~15 MB (53% reducción)
+• Layout intacto
+• Links funcionando
+• Texto seleccionable
+
+
+┌─────────────────────────────────────────────────────────────────────┐
+│ CASO: PROTOTIPO INTERACTIVO CON LINKS                               │
+└─────────────────────────────────────────────────────────────────────┘
+
+MODO: Solo comprimir imágenes ⭐
+DPI: 150 DPI
+PRESERVAR:
+✅ Texto editable
+✅ Links y anotaciones ← CRÍTICO
+✅ Estructura de layout
+
+RESULTADO:
+• Links preservados
+• Navegación intacta
+• Compresión moderada
+
+
+┌─────────────────────────────────────────────────────────────────────┐
+│ CASO: DOCUMENTO SIMPLE PARA EMAIL                                   │
+└─────────────────────────────────────────────────────────────────────┘
+
+MODO: Optimización completa
+DPI: 72 DPI (solo pantalla)
+PRESERVAR:
+✅ Texto editable
+✅ Links (si tiene)
+❌ Estructura (no importa)
+
+RESULTADO:
+• Máxima compresión (~75-80%)
+• Perfecto para email
+• Solo visualización
+
+
+┌─────────────────────────────────────────────────────────────────────┐
+│ CASO: PORTFOLIO PARA WEB CON CAPTURAS DE PANTALLA                   │
+└─────────────────────────────────────────────────────────────────────┘
+
+MODO: Solo comprimir imágenes
+DPI: 150 DPI ⭐
+PRESERVAR:
+✅ Texto editable
+✅ Links (a proyectos)
+✅ Estructura de layout
+
+RESULTADO:
+• Balance perfecto
+• Carga rápida en web
+• Se ve profesional
+
+
+┌─────────────────────────────────────────────────────────────────────┐
+│ CASO: PRESENTACIÓN PARA IMPRIMIR EN ALTA CALIDAD                    │
+└─────────────────────────────────────────────────────────────────────┘
+
+MODO: Solo comprimir imágenes
+DPI: 300 DPI
+PRESERVAR:
+✅ Texto editable
+❌ Links (no aplica)
+✅ Estructura de layout
+
+RESULTADO:
+• Mínima compresión (~30-40%)
+• Calidad profesional
+• Listo para imprenta
+
+═══════════════════════════════════════════════════════════════════════
+
+⚠️ PROBLEMAS COMUNES Y SOLUCIONES
+
+┌─────────────────────────────────────────────────────────────────────┐
+│ PROBLEMA: "Se rompió el layout"                                     │
+└─────────────────────────────────────────────────────────────────────┘
+
+SOLUCIÓN:
+1. Cambiar a "Solo comprimir imágenes"
+2. Activar ✓ Estructura de layout
+3. Probar con DPI más alto (150 → 300)
+
+
+┌─────────────────────────────────────────────────────────────────────┐
+│ PROBLEMA: "Los links dejaron de funcionar"                          │
+└─────────────────────────────────────────────────────────────────────┘
+
+SOLUCIÓN:
+• Activar ✓ Links y anotaciones
+• Este checkbox es CRÍTICO para PDFs interactivos
+
+
+┌─────────────────────────────────────────────────────────────────────┐
+│ PROBLEMA: "El texto se convirtió en imagen"                         │
+└─────────────────────────────────────────────────────────────────────┘
+
+SOLUCIÓN:
+• Activar ✓ Texto editable (no rasterizar)
+• SIEMPRE dejar esto activado
+
+
+┌─────────────────────────────────────────────────────────────────────┐
+│ PROBLEMA: "No comprime casi nada"                                   │
+└─────────────────────────────────────────────────────────────────────┘
+
+CAUSAS POSIBLES:
+1. El PDF ya está optimizado
+2. Tiene pocas imágenes (solo texto)
+3. DPI está muy alto (300 DPI)
+
+SOLUCIÓN:
+• Bajar DPI a 150 o 72
+• Probar "Optimización completa"
+• Verificar que el PDF tenga imágenes
+
+
+┌─────────────────────────────────────────────────────────────────────┐
+│ PROBLEMA: "El archivo salió más grande"                             │
+└─────────────────────────────────────────────────────────────────────┘
+
+CAUSAS:
+• Ghostscript embedeó fuentes que no estaban
+• El PDF original usaba compression LZW u otro
+
+SOLUCIÓN:
+• Desactivar "Texto editable" si no lo necesitás
+• Usar "Optimización completa"
+
+═══════════════════════════════════════════════════════════════════════
+
+🔬 DETALLES TÉCNICOS GHOSTSCRIPT
+
+COMPRESSIÓN DE IMÁGENES:
+-dColorImageResolution=150     → DPI para imágenes color
+-dGrayImageResolution=150      → DPI para imágenes grises
+-dColorImageDownsampleType=/Bicubic  → Algoritmo (mejor calidad)
+
+PRESERVACIÓN DE CONTENIDO:
+-dPreserveAnnots=true          → Links, notas, formularios
+-dEmbedAllFonts=true          → Embedea fuentes completas
+-dSubsetFonts=false           → NO hace subset (preserva texto)
+
+ESTRUCTURA:
+-dPreserveHalftoneInfo=true   → Mantiene info de semitonos
+-dAutoRotatePages=/None       → NO rota páginas automáticamente
+-dPreserveOverprintSettings=true → Mantiene sobreimpresión
+
+OPTIMIZACIÓN COMPLETA:
+-dCompressPages=true          → Comprime streams de contenido
+-dCompressFonts=true         → Comprime fuentes
+-dDetectDuplicateImages=true → Elimina imágenes duplicadas
+
+═══════════════════════════════════════════════════════════════════════
+
+📚 GLOSARIO
+
+DPI: Dots Per Inch - puntos por pulgada. Mayor DPI = mayor calidad.
+
+DOWNSAMPLE: Reducir resolución de imagen. 600 DPI → 150 DPI.
+
+RASTERIZAR: Convertir texto/vectores en imagen (píxeles). Irreversible.
+
+SUBSET: Incluir solo caracteres usados de una fuente. Reduce tamaño.
+
+EMBED: Incluir fuente completa en el PDF. Garantiza reproducción.
+
+HALFTONE: Patrones de puntos que simulan tonos continuos en impresión.
+
+SOBREIMPRESIÓN: Técnica de impresión donde tintas se superponen.
+
+STREAMS: Flujos de datos comprimidos dentro del PDF.
+
+═══════════════════════════════════════════════════════════════════════
+
+✅ CHECKLIST RÁPIDO PARA PROFERTIL
+
+ANTES DE COMPRIMIR:
+[ ] Archivo es .pdf (no .ai, .indd, etc.)
+[ ] Links están funcionando en original
+[ ] Texto es seleccionable en original
+
+CONFIGURACIÓN:
+[ ] Modo: Solo comprimir imágenes
+[ ] DPI: 150 (o 300 si va a imprenta)
+[ ] ✓ Texto editable
+[ ] ✓ Links y anotaciones
+[ ] ✓ Estructura de layout
+
+DESPUÉS DE COMPRIMIR:
+[ ] Verificar links funcionan
+[ ] Verificar texto es seleccionable
+[ ] Verificar layout no se rompió
+[ ] Comparar tamaño (debe ser ~50-70% menos)
+
+═══════════════════════════════════════════════════════════════════════
+
+🎓 PARA RECORDAR
+
+1. **"Solo comprimir imágenes"** es casi siempre la mejor opción
+2. **150 DPI** es el sweet spot para 90% de los casos
+3. **SIEMPRE** dejar activado "Texto editable"
+4. **Links** son críticos para prototipos/manuales interactivos
+5. Si se rompe el layout → "Solo imágenes" + DPI más alto
+
+═══════════════════════════════════════════════════════════════════════
+
+¡Listo! Con estos controles tenés total control sobre qué se comprime
+y qué se preserva. Perfecto para Profertil y cualquier PDF crítico. 🚀
+
+═══════════════════════════════════════════════════════════════════════

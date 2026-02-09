@@ -34,6 +34,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const pdfInfoBadge = document.querySelector('.pdf-info');
     const selectorBtns = document.querySelectorAll('.selector-btn');
     
+    // PDF Advanced Controls
+    const pdfAdvancedControls = document.getElementById('pdfAdvancedControls');
+    const modeButtons = document.querySelectorAll('.pdf-mode-btn');
+    const dpiButtons = document.querySelectorAll('.dpi-btn');
+    const preserveText = document.getElementById('preserveText');
+    const preserveLinks = document.getElementById('preserveLinks');
+    const preserveLayout = document.getElementById('preserveLayout');
+    
+    let pdfCompressionMode = 'images-only'; // 'images-only' or 'full'
+    let pdfDPI = 150; // 72, 150, or 300
+    
     console.log('Botones encontrados:', selectorBtns.length);
     
     // File Type Selector
@@ -46,6 +57,33 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     console.log('Listeners agregados correctamente');
+    
+    // PDF Mode selector (images-only vs full)
+    modeButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const mode = btn.dataset.mode;
+            pdfCompressionMode = mode;
+            
+            modeButtons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            console.log('PDF Mode cambiado a:', mode);
+        });
+    });
+    
+    // DPI selector
+    dpiButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const dpi = parseInt(btn.dataset.dpi);
+            pdfDPI = dpi;
+            
+            dpiButtons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            console.log('DPI cambiado a:', dpi);
+        });
+    });
+    
     
     function switchFileType(type) {
         console.log('switchFileType llamado con:', type);
@@ -67,12 +105,14 @@ document.addEventListener('DOMContentLoaded', () => {
             dropZoneTitle.textContent = 'Arrastrá tu presentación acá';
             compressBtn.innerHTML = '<i data-feather="zap" style="width: 20px; height: 20px; display: inline-block; vertical-align: middle; margin-right: 8px;"></i>Comprimir Presentación';
             pdfInfoBadge.style.display = 'none';
+            pdfAdvancedControls.style.display = 'none';
         } else {
             fileTypeLabel.textContent = 'PDF';
             fileInput.accept = '.pdf';
             dropZoneTitle.textContent = 'Arrastrá tu PDF acá';
             compressBtn.innerHTML = '<i data-feather="zap" style="width: 20px; height: 20px; display: inline-block; vertical-align: middle; margin-right: 8px;"></i>Comprimir PDF';
             pdfInfoBadge.style.display = 'inline-block';
+            pdfAdvancedControls.style.display = 'block';
         }
         
         console.log('Disparando evento input en slider');
@@ -331,7 +371,125 @@ document.addEventListener('DOMContentLoaded', () => {
             
             updateProgress(20, 'Cargando motor de compresión...');
             
-            const worker = new Worker('pdf-worker.js', { type: 'module' });
+            // Create inline worker to avoid CORS issues with file://
+            const workerCode = `
+                let gs = null;
+
+                async function initGhostscript() {
+                    if (gs) return gs;
+                    
+                    try {
+                        const module = await import('https://cdn.jsdelivr.net/npm/@jspawn/ghostscript-wasm@0.0.2/gs.mjs');
+                        
+                        gs = await module.default({
+                            locateFile: (file) => \`https://cdn.jsdelivr.net/npm/@jspawn/ghostscript-wasm@0.0.2/\${file}\`,
+                            printErr: (text) => {
+                                console.log('Ghostscript:', text);
+                            }
+                        });
+                        
+                        return gs;
+                    } catch (error) {
+                        throw new Error('Error loading Ghostscript: ' + error.message);
+                    }
+                }
+
+                async function compressPDF(pdfData, options) {
+                    try {
+                        const ghostscript = await initGhostscript();
+                        
+                        self.postMessage({ type: 'progress', progress: 30, message: 'Ghostscript cargado' });
+                        
+                        ghostscript.FS.writeFile('input.pdf', new Uint8Array(pdfData));
+                        
+                        self.postMessage({ type: 'progress', progress: 40, message: 'Comprimiendo PDF...' });
+                        
+                        // Build Ghostscript arguments based on options
+                        const args = [
+                            '-sDEVICE=pdfwrite',
+                            '-dCompatibilityLevel=1.4',
+                            '-dNOPAUSE',
+                            '-dQUIET',
+                            '-dBATCH',
+                            '-sOutputFile=output.pdf'
+                        ];
+                        
+                        // Image compression settings
+                        args.push(\`-dColorImageResolution=\${options.dpi}\`);
+                        args.push(\`-dGrayImageResolution=\${options.dpi}\`);
+                        args.push('-dColorImageDownsampleType=/Bicubic');
+                        args.push('-dGrayImageDownsampleType=/Bicubic');
+                        args.push('-dMonoImageDownsampleType=/Bicubic');
+                        
+                        // Preservation options
+                        if (options.preserveLinks) {
+                            args.push('-dPreserveAnnots=true');
+                        }
+                        
+                        if (options.preserveText) {
+                            args.push('-dEmbedAllFonts=true');
+                            args.push('-dSubsetFonts=false');
+                        }
+                        
+                        if (options.preserveLayout) {
+                            args.push('-dPreserveHalftoneInfo=true');
+                            args.push('-dAutoRotatePages=/None');
+                            args.push('-dPreserveOverprintSettings=true');
+                        }
+                        
+                        // Compression mode
+                        if (options.mode === 'images-only') {
+                            // Only compress images, don't touch structure
+                            args.push('-dCompressPages=false');
+                            args.push('-dCompressFonts=false');
+                            args.push('-dDetectDuplicateImages=false');
+                        } else {
+                            // Full optimization
+                            args.push('-dCompressPages=true');
+                            args.push('-dCompressFonts=true');
+                            args.push('-dDetectDuplicateImages=true');
+                        }
+                        
+                        args.push('input.pdf');
+                        
+                        console.log('Ghostscript args:', args);
+                        
+                        await ghostscript.callMain(args);
+                        
+                        self.postMessage({ type: 'progress', progress: 80, message: 'Finalizando...' });
+                        
+                        const compressedData = ghostscript.FS.readFile('output.pdf');
+                        
+                        ghostscript.FS.unlink('input.pdf');
+                        ghostscript.FS.unlink('output.pdf');
+                        
+                        self.postMessage({ type: 'progress', progress: 100, message: '¡Completado!' });
+                        
+                        return compressedData.buffer;
+                        
+                    } catch (error) {
+                        throw new Error('Error compressing PDF: ' + error.message);
+                    }
+                }
+
+                self.addEventListener('message', async (e) => {
+                    const { type, data, options } = e.data;
+                    
+                    if (type === 'compress') {
+                        try {
+                            const compressed = await compressPDF(data, options);
+                            self.postMessage({ type: 'complete', data: compressed });
+                        } catch (error) {
+                            self.postMessage({ type: 'error', message: error.message });
+                        }
+                    }
+                });
+            `;
+            
+            // Create worker from blob
+            const blob = new Blob([workerCode], { type: 'application/javascript' });
+            const workerUrl = URL.createObjectURL(blob);
+            const worker = new Worker(workerUrl, { type: 'module' });
             
             worker.onmessage = (e) => {
                 const { type, progress, message, data } = e.data;
@@ -352,6 +510,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         progressContainer.classList.remove('active');
                         results.classList.add('active');
                         worker.terminate();
+                        URL.revokeObjectURL(workerUrl);
                     }, 500);
                 } else if (type === 'error') {
                     throw new Error(message);
@@ -364,12 +523,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 progressContainer.classList.remove('active');
                 compressBtn.disabled = false;
                 worker.terminate();
+                URL.revokeObjectURL(workerUrl);
             };
             
             worker.postMessage({
                 type: 'compress',
                 data: arrayBuffer,
-                quality: quality
+                options: {
+                    dpi: pdfDPI,
+                    mode: pdfCompressionMode,
+                    preserveText: preserveText.checked,
+                    preserveLinks: preserveLinks.checked,
+                    preserveLayout: preserveLayout.checked
+                }
             });
             
         } catch (err) {
