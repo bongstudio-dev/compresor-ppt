@@ -1,6 +1,9 @@
 // Bong Studio - Compresor PPT/PDF Web App
 // JavaScript para compresión client-side
 
+// Wait for DOM to be ready
+document.addEventListener('DOMContentLoaded', () => {
+
 let selectedFile = null;
 let compressedBlob = null;
 let currentFileType = 'ppt'; // 'ppt' or 'pdf'
@@ -443,3 +446,9 @@ async function compressPDF() {
         compressBtn.disabled = false;
     }
 }
+
+// Initialize on load
+qualitySlider.dispatchEvent(new Event('input'));
+feather.replace();
+
+}); // End DOMContentLoaded
