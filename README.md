@@ -1,63 +1,131 @@
-# Compresor PPT - Bong Studio
+# Compresor PPT/PDF - Bong Studio
 
-Comprime presentaciones PowerPoint online sin perder calidad. Procesamiento 100% local y gratuito.
+Compresor profesional de presentaciones PowerPoint y documentos PDF. **100% client-side, gratis y sin límites.**
 
-## 🎯 Características
+## 🚀 [Probá la herramienta](https://bongstudio-dev.github.io/compresor-ppt)
 
-✅ **Gratis y sin registro** - No necesitás cuenta ni pagar nada  
-✅ **100% privado** - Todo se procesa en tu navegador, tus archivos nunca se suben  
-✅ **Reduce hasta 70%** - Comprime imágenes manteniendo excelente calidad  
-✅ **Respeta transparencias** - Los logos y elementos con transparencia se mantienen  
-✅ **Responsive** - Funciona en desktop, tablet y mobile  
+## ✨ Características
 
-## 🚀 Demo
+### PowerPoint (PPTX)
+- ✅ Reduce hasta **70% del tamaño** manteniendo calidad visual
+- ✅ Respeta transparencias en logos y elementos PNG
+- ✅ Slider de calidad ajustable (60-95%)
+- ✅ Procesa cientos de imágenes en segundos
 
-[**Probá la herramienta acá**](https://TU-USUARIO.github.io/compresor-ppt)
+### PDF
+- ✅ Compresión profesional con **Ghostscript WASM**
+- ✅ **Preserva links**, anotaciones y marcadores
+- ✅ 4 presets automáticos según calidad
+- ✅ Ideal para prototipos interactivos y manuales
+
+## 🎯 Presets de Calidad PDF
+
+| Preset | DPI | Uso | Reducción |
+|--------|-----|-----|-----------|
+| Pantalla | 72 | Visualización web | ~80% |
+| **eBook** ⭐ | 150 | Balance ideal | ~70% |
+| Imprimir | 300 | Impresión casera | ~50% |
+| Profesional | 300 | Imprenta | ~30% |
+
+## 🔒 100% Privado
+
+- Todo se procesa en tu navegador
+- Tus archivos **nunca** se suben a ningún servidor
+- Sin registro ni límites de uso
+- Código abierto y auditable
 
 ## 💻 Tecnologías
 
-- **HTML5** - Estructura semántica
-- **CSS3** - Diseño moderno con gradientes y animaciones
-- **JavaScript (ES6+)** - Lógica de compresión client-side
-- **JSZip** - Manejo de archivos PPTX (ZIP)
-- **Canvas API** - Compresión de imágenes
+- **HTML5 + CSS3** - Interfaz responsiva
+- **JavaScript (ES6+)** - Lógica client-side
+- **JSZip** - Manejo de archivos PPTX
+- **Ghostscript WASM** - Compresión PDF profesional
+- **Web Workers** - Procesamiento en background
+- **Feather Icons** - Iconografía minimalista
 
-## 🎨 Uso
+## 🎨 Diseño
 
-1. **Arrastrá** tu archivo .pptx a la zona de drop
-2. **Ajustá** la calidad (recomendado: 85%)
-3. **Click** en "Comprimir presentación"
-4. **Descargá** tu archivo optimizado
+- Identidad visual **Bong Studio**
+- Tipografía: **Satoshi** + **Space Mono**
+- Selector iOS-style
+- Dark mode profesional
 
-## 📊 Resultados típicos
+## 🚀 Uso
 
-- Presentación de 30 MB → 9 MB (70% reducción)
-- Mantiene calidad visual excelente
-- Logos y elementos con transparencia intactos
-- Proceso en segundos
+1. Seleccioná tipo: **PPT** o **PDF**
+2. Arrastrá tu archivo o hacé click para seleccionar
+3. Ajustá la calidad con el slider
+4. Click en **Comprimir**
+5. Descargá tu archivo optimizado
 
-## 🔧 Desarrollo local
+## 📊 Resultados Reales
+
+**Presentación Profertil (30 MB, 587 imágenes):**
+- Tamaño original: 32.86 MB
+- Tamaño comprimido: 9.08 MB
+- Reducción: **72.4%**
+
+**Manual de marca (50 MB, 125 páginas PDF):**
+- Preset eBook (150 DPI)
+- Reducción estimada: **~70%**
+- Links preservados: ✅
+
+## 🛠️ Desarrollo Local
 
 ```bash
 # Clonar el repositorio
-git clone https://github.com/TU-USUARIO/compresor-ppt.git
+git clone https://github.com/bongstudio-dev/compresor-ppt.git
+cd compresor-ppt
 
 # Abrir en navegador
 open index.html
 ```
 
-No necesita servidor ni dependencias. Funciona directo en el navegador.
+No requiere instalación ni dependencias. Funciona directo en el navegador.
 
 ## 🤝 Contribuir
 
-¿Tenés ideas para mejorar la herramienta? Pull requests bienvenidos!
+Pull requests bienvenidos. Para cambios mayores, abrí un issue primero.
 
-## 📝 Licencia
+## 📝 Casos de Uso
+
+### Diseñadores
+- Compartir prototipos PDF interactivos
+- Enviar presentaciones por email
+- Optimizar portfolios para web
+
+### Empresas
+- Distribuir manuales de marca
+- Compartir documentación técnica
+- Reducir costos de almacenamiento
+
+### Estudiantes
+- Enviar trabajos por plataformas con límite
+- Compartir presentaciones en grupos
+- Archivar apuntes PDF
+
+## ⚡ Performance
+
+- **PPT (30MB):** 5-10 segundos
+- **PDF (50MB):** 10-20 segundos
+- Primera carga PDF: +3-5 segundos (descarga Ghostscript WASM)
+- Próximas veces: instantáneo (cacheo automático)
+
+## 🌐 Compatibilidad
+
+- ✅ Chrome / Edge (Chromium)
+- ✅ Firefox
+- ✅ Safari
+- ✅ Mobile (iOS / Android)
+
+Requiere navegador moderno con soporte WebAssembly.
+
+## 📄 Licencia
 
 MIT License - Libre para usar y modificar
 
 ---
 
-**Hecho con ❤️ por [Bong Studio](https://bongstudio.com)**
+**Hecho con ❤️ por [Bong Studio](https://bongstudio.ar)**
 
 *Herramienta gratuita para la comunidad de diseño y comunicación*

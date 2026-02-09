@@ -1,8 +1,83 @@
-// Bong Studio - Compresor PPT Web App
+// Bong Studio - Compresor PPT/PDF Web App
 // JavaScript para compresión client-side
 
 let selectedFile = null;
 let compressedBlob = null;
+let currentFileType = 'ppt'; // 'ppt' or 'pdf'
+
+// Elements
+const dropZone = document.getElementById('dropZone');
+const fileInput = document.getElementById('fileInput');
+const fileInfo = document.getElementById('fileInfo');
+const fileName = document.getElementById('fileName');
+const fileSize = document.getElementById('fileSize');
+const qualitySlider = document.getElementById('qualitySlider');
+const qualityValue = document.getElementById('qualityValue');
+const compressBtn = document.getElementById('compressBtn');
+const progressContainer = document.getElementById('progressContainer');
+const progressLabel = document.getElementById('progressLabel');
+const progressFill = document.getElementById('progressFill');
+const progressText = document.getElementById('progressText');
+const results = document.getElementById('results');
+const originalSizeEl = document.getElementById('originalSize');
+const finalSizeEl = document.getElementById('finalSize');
+const reductionEl = document.getElementById('reduction');
+const downloadBtn = document.getElementById('downloadBtn');
+const fileTypeLabel = document.getElementById('fileTypeLabel');
+const dropZoneTitle = document.getElementById('dropZoneTitle');
+const dropZoneSubtitle = document.getElementById('dropZoneSubtitle');
+const pdfInfoBadge = document.querySelector('.pdf-info');
+
+// File Type Selector
+const selectorBtns = document.querySelectorAll('.selector-btn');
+
+selectorBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+        const type = btn.dataset.type;
+        switchFileType(type);
+    });
+});
+
+function switchFileType(type) {
+    currentFileType = type;
+    
+    // Update active state
+    selectorBtns.forEach(btn => {
+        if (btn.dataset.type === type) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+    
+    // Update UI
+    if (type === 'ppt') {
+        fileTypeLabel.textContent = 'PPT';
+        fileInput.accept = '.pptx';
+        dropZoneTitle.textContent = 'Arrastrá tu presentación acá';
+        compressBtn.innerHTML = '<i data-feather="zap" style="width: 20px; height: 20px; display: inline-block; vertical-align: middle; margin-right: 8px;"></i>Comprimir Presentación';
+        pdfInfoBadge.style.display = 'none';
+    } else {
+        fileTypeLabel.textContent = 'PDF';
+        fileInput.accept = '.pdf';
+        dropZoneTitle.textContent = 'Arrastrá tu PDF acá';
+        compressBtn.innerHTML = '<i data-feather="zap" style="width: 20px; height: 20px; display: inline-block; vertical-align: middle; margin-right: 8px;"></i>Comprimir PDF';
+        pdfInfoBadge.style.display = 'inline-block';
+    }
+    
+    // Update quality label
+    const currentQuality = parseInt(qualitySlider.value);
+    qualitySlider.dispatchEvent(new Event('input'));
+    
+    // Update icons
+    feather.replace();
+    
+    // Reset state
+    selectedFile = null;
+    fileInfo.classList.remove('active');
+    results.classList.remove('active');
+    compressBtn.disabled = true;
+}
 
 // Elements
 const dropZone = document.getElementById('dropZone');
@@ -54,22 +129,40 @@ fileInput.addEventListener('change', (e) => {
 // Quality slider
 qualitySlider.addEventListener('input', (e) => {
     const value = parseInt(e.target.value);
-    qualityValue.textContent = value + '%';
     
     // Update color based on quality
     qualityValue.className = 'quality-value';
-    if (value >= 90) {
-        qualityValue.classList.add('high');
-        qualityValue.textContent = value + '% (Máxima calidad)';
-    } else if (value >= 85) {
-        qualityValue.classList.add('recommended');
-        qualityValue.textContent = value + '% (Recomendado ⭐)';
-    } else if (value >= 75) {
-        qualityValue.classList.add('medium');
-        qualityValue.textContent = value + '% (Buena compresión)';
+    
+    if (currentFileType === 'pdf') {
+        // PDF: Show Ghostscript preset
+        if (value <= 70) {
+            qualityValue.classList.add('low');
+            qualityValue.textContent = value + '% (Pantalla - 72 DPI)';
+        } else if (value <= 84) {
+            qualityValue.classList.add('recommended');
+            qualityValue.textContent = value + '% (eBook - 150 DPI ⭐)';
+        } else if (value <= 92) {
+            qualityValue.classList.add('high');
+            qualityValue.textContent = value + '% (Imprimir - 300 DPI)';
+        } else {
+            qualityValue.classList.add('high');
+            qualityValue.textContent = value + '% (Profesional - 300 DPI)';
+        }
     } else {
-        qualityValue.classList.add('low');
-        qualityValue.textContent = value + '% (Máxima compresión)';
+        // PPT: Original labels
+        if (value >= 90) {
+            qualityValue.classList.add('high');
+            qualityValue.textContent = value + '% (Máxima calidad)';
+        } else if (value >= 85) {
+            qualityValue.classList.add('recommended');
+            qualityValue.textContent = value + '% (Recomendado ⭐)';
+        } else if (value >= 75) {
+            qualityValue.classList.add('medium');
+            qualityValue.textContent = value + '% (Buena compresión)';
+        } else {
+            qualityValue.classList.add('low');
+            qualityValue.textContent = value + '% (Máxima compresión)';
+        }
     }
 });
 
@@ -81,8 +174,10 @@ downloadBtn.addEventListener('click', downloadCompressed);
 
 // Handle file selection
 function handleFile(file) {
-    if (!file.name.endsWith('.pptx')) {
-        alert('Por favor seleccioná un archivo .pptx');
+    const expectedExtension = currentFileType === 'ppt' ? '.pptx' : '.pdf';
+    
+    if (!file.name.toLowerCase().endsWith(expectedExtension)) {
+        alert(`Por favor seleccioná un archivo ${expectedExtension}`);
         return;
     }
     
@@ -163,6 +258,15 @@ async function compressImage(blob, filename, quality) {
 async function compressPresentation() {
     if (!selectedFile) return;
     
+    if (currentFileType === 'ppt') {
+        await compressPPT();
+    } else {
+        await compressPDF();
+    }
+}
+
+// Compress PPT
+async function compressPPT() {
     compressBtn.disabled = true;
     progressContainer.classList.add('active');
     results.classList.remove('active');
@@ -255,8 +359,9 @@ async function compressPresentation() {
 function downloadCompressed() {
     if (!compressedBlob) return;
     
-    const originalName = selectedFile.name.replace('.pptx', '');
-    const newName = originalName + '_COMPRESSED.pptx';
+    const extension = currentFileType === 'ppt' ? '.pptx' : '.pdf';
+    const originalName = selectedFile.name.replace(extension, '');
+    const newName = originalName + '_COMPRESSED' + extension;
     
     const url = URL.createObjectURL(compressedBlob);
     const a = document.createElement('a');
@@ -266,4 +371,75 @@ function downloadCompressed() {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+}
+
+// Compress PDF using Ghostscript WASM
+async function compressPDF() {
+    compressBtn.disabled = true;
+    progressContainer.classList.add('active');
+    results.classList.remove('active');
+    
+    const quality = parseInt(qualitySlider.value);
+    const originalSize = selectedFile.size;
+    
+    try {
+        updateProgress(10, 'Preparando PDF...');
+        
+        // Read file as ArrayBuffer
+        const arrayBuffer = await selectedFile.arrayBuffer();
+        
+        updateProgress(20, 'Cargando motor de compresión...');
+        
+        // Create Web Worker for PDF compression
+        const worker = new Worker('pdf-worker.js', { type: 'module' });
+        
+        // Handle worker messages
+        worker.onmessage = (e) => {
+            const { type, progress, message, data } = e.data;
+            
+            if (type === 'progress') {
+                updateProgress(progress, message);
+            } else if (type === 'complete') {
+                // Create blob from compressed data
+                compressedBlob = new Blob([data], { type: 'application/pdf' });
+                
+                // Show results
+                const finalSize = compressedBlob.size;
+                const reduction = ((originalSize - finalSize) / originalSize) * 100;
+                
+                originalSizeEl.textContent = formatBytes(originalSize);
+                finalSizeEl.textContent = formatBytes(finalSize);
+                reductionEl.textContent = reduction.toFixed(1) + '%';
+                
+                setTimeout(() => {
+                    progressContainer.classList.remove('active');
+                    results.classList.add('active');
+                    worker.terminate();
+                }, 500);
+            } else if (type === 'error') {
+                throw new Error(message);
+            }
+        };
+        
+        worker.onerror = (error) => {
+            console.error('Worker error:', error);
+            alert('Error en el procesamiento: ' + error.message);
+            progressContainer.classList.remove('active');
+            compressBtn.disabled = false;
+            worker.terminate();
+        };
+        
+        // Send compression task to worker
+        worker.postMessage({
+            type: 'compress',
+            data: arrayBuffer,
+            quality: quality
+        });
+        
+    } catch (err) {
+        console.error('Error:', err);
+        alert('Error al comprimir el PDF: ' + err.message);
+        progressContainer.classList.remove('active');
+        compressBtn.disabled = false;
+    }
 }

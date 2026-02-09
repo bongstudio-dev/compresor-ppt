@@ -40,6 +40,43 @@
             width: 100%;
         }
 
+        /* File Type Selector - iOS Style */
+        .file-type-selector {
+            display: flex;
+            background: rgba(24, 47, 37, 0.5);
+            border-radius: 999px;
+            padding: 4px;
+            margin: 0 auto 40px;
+            max-width: 300px;
+            gap: 4px;
+        }
+
+        .selector-btn {
+            flex: 1;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 999px;
+            background: transparent;
+            color: var(--bong-gris);
+            font-family: 'Space Mono', monospace;
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .selector-btn.active {
+            background: var(--bong-verde);
+            color: var(--bong-verde-oscuro);
+            box-shadow: 0 2px 8px rgba(32, 198, 131, 0.3);
+        }
+
+        .selector-btn:hover:not(.active) {
+            color: #ffffff;
+        }
+
         /* Header */
         header {
             text-align: center;
@@ -414,12 +451,22 @@
 </head>
 <body>
     <div class="container">
+        <!-- File Type Selector -->
+        <div class="file-type-selector">
+            <button class="selector-btn active" data-type="ppt">PPT</button>
+            <button class="selector-btn" data-type="pdf">PDF</button>
+        </div>
+
         <header>
-            <div class="logo">Compresor PPT</div>
+            <div class="logo">Compresor <span id="fileTypeLabel">PPT</span></div>
             <p class="subtitle">Bong Studio</p>
             <div class="info-badge">
                 <i data-feather="star" style="width: 16px; height: 16px; display: inline-block; vertical-align: middle; margin-right: 6px;"></i>
                 Gratis • Sin registro • Procesamiento local
+            </div>
+            <div class="info-badge pdf-info" style="margin-top: 10px; display: none;">
+                <i data-feather="link" style="width: 16px; height: 16px; display: inline-block; vertical-align: middle; margin-right: 6px;"></i>
+                Preserva links, anotaciones y marcadores
             </div>
         </header>
 
@@ -428,8 +475,8 @@
             <div class="drop-zone-icon">
                 <i data-feather="upload" style="width: 64px; height: 64px; stroke-width: 1.5;"></i>
             </div>
-            <h2>Arrastrá tu presentación acá</h2>
-            <p>o hacé click para seleccionar</p>
+            <h2 id="dropZoneTitle">Arrastrá tu presentación acá</h2>
+            <p id="dropZoneSubtitle">o hacé click para seleccionar</p>
             <input type="file" id="fileInput" class="file-input" accept=".pptx">
         </div>
 
@@ -446,6 +493,7 @@
             <input type="range" min="60" max="95" value="85" class="slider" id="qualitySlider">
             <div class="quality-labels">
                 <span>Máxima compresión</span>
+                <span>Balance ideal</span>
                 <span>Máxima calidad</span>
             </div>
         </div>
@@ -503,6 +551,12 @@
 
     <!-- JSZip Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    
+    <!-- Ghostscript WASM for PDF compression -->
+    <script type="module">
+        // Ghostscript WASM will be loaded dynamically when needed
+        window.ghostscriptReady = false;
+    </script>
     
     <script src="app.js"></script>
     
