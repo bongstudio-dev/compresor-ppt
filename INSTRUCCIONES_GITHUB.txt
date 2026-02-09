@@ -1,0 +1,226 @@
+═══════════════════════════════════════════════════════════════════════
+  BONG STUDIO - COMPRESOR PPT WEB APP
+  Instrucciones para subir a GitHub Pages
+═══════════════════════════════════════════════════════════════════════
+
+🎯 LO QUE VAS A TENER:
+--------------------------------------------------------------------
+✅ Web app pública y gratis
+✅ URL: https://TU-USUARIO.github.io/compresor-ppt
+✅ Funciona 100% client-side (sin servidor)
+✅ La pueden usar clientes de Profertil, Bong Studio, etc.
+✅ Diseño profesional con branding de Bong
+✅ Responsive (funciona en mobile, tablet, desktop)
+
+
+📁 ARCHIVOS QUE TENÉS:
+--------------------------------------------------------------------
+• index.html  - La página web
+• app.js      - Lógica de compresión
+• README.md   - Documentación (opcional)
+
+
+🚀 PASO A PASO PARA SUBIR A GITHUB:
+--------------------------------------------------------------------
+
+OPCIÓN A - CON GITHUB DESKTOP (MÁS FÁCIL):
+───────────────────────────────────────────
+
+1. CREAR REPOSITORIO EN GITHUB.COM
+   • Andá a https://github.com/new
+   • Repository name: compresor-ppt
+   • Description: "Compresor de presentaciones PowerPoint online"
+   • Public
+   • NO marcar "Add a README file"
+   • Create repository
+
+2. CLONAR EL REPOSITORIO
+   • Abrí GitHub Desktop
+   • File → Clone Repository
+   • Seleccioná tu repositorio "compresor-ppt"
+   • Choose... → Elegí una carpeta (ej: Desktop)
+   • Clone
+
+3. AGREGAR LOS ARCHIVOS
+   • Copiá index.html y app.js a la carpeta del repositorio
+   • En GitHub Desktop vas a ver los archivos nuevos
+
+4. HACER COMMIT
+   • En GitHub Desktop, en "Summary" escribí: "Primera versión"
+   • Click en "Commit to main"
+   • Click en "Push origin"
+
+5. ACTIVAR GITHUB PAGES
+   • Andá a tu repositorio en github.com
+   • Settings → Pages
+   • Source: Deploy from a branch
+   • Branch: main → /root → Save
+   • Esperá 1-2 minutos
+
+6. ¡LISTO!
+   Tu web va a estar en:
+   https://TU-USUARIO.github.io/compresor-ppt
+
+
+OPCIÓN B - CON TERMINAL (MÁS RÁPIDO):
+──────────────────────────────────────
+
+1. CREAR REPOSITORIO EN GITHUB.COM (igual que arriba)
+
+2. SUBIR ARCHIVOS
+   cd ~/Desktop
+   mkdir compresor-ppt
+   cd compresor-ppt
+   
+   # Copiar archivos acá
+   cp ../index.html .
+   cp ../app.js .
+   
+   # Inicializar Git
+   git init
+   git add .
+   git commit -m "Primera versión"
+   git branch -M main
+   git remote add origin https://github.com/TU-USUARIO/compresor-ppt.git
+   git push -u origin main
+
+3. ACTIVAR GITHUB PAGES (igual que arriba)
+
+
+🌐 DOMINIO PERSONALIZADO (OPCIONAL):
+--------------------------------------------------------------------
+
+Si querés tener tu propio dominio tipo:
+• tools.bongstudio.com
+• compresor.bongstudio.com
+
+1. EN TU PROVEEDOR DE DOMINIO
+   Creá un registro CNAME:
+   - Name: tools (o compresor)
+   - Value: TU-USUARIO.github.io
+
+2. EN GITHUB
+   Settings → Pages → Custom domain
+   Escribí: tools.bongstudio.com
+   Save
+
+
+📝 CREAR UN README.md (OPCIONAL):
+--------------------------------------------------------------------
+
+Creá un archivo README.md para documentar el proyecto:
+
+```markdown
+# Compresor PPT - Bong Studio
+
+Comprime presentaciones PowerPoint online sin perder calidad.
+
+## Características
+
+✅ Gratis y sin registro
+✅ Procesamiento 100% local (tus archivos nunca se suben)
+✅ Reduce hasta 70% del tamaño
+✅ Mantiene logos y elementos con transparencia
+✅ Responsive design
+
+## Demo
+
+[Ver demo](https://TU-USUARIO.github.io/compresor-ppt)
+
+## Tecnologías
+
+- HTML5
+- CSS3 (Gradientes, Flexbox, Grid)
+- JavaScript (ES6+)
+- JSZip
+- Canvas API
+
+## Uso
+
+1. Arrastrá tu archivo .pptx
+2. Ajustá la calidad (recomendado: 85%)
+3. Click en comprimir
+4. Descargá tu archivo comprimido
+
+---
+
+Hecho con ❤️ por [Bong Studio](https://bongstudio.com)
+```
+
+
+🎨 PERSONALIZACIÓN:
+--------------------------------------------------------------------
+
+Para cambiar el diseño o agregar features:
+
+1. Editá index.html o app.js
+2. En GitHub Desktop: Commit changes
+3. Push origin
+4. Los cambios se verán en ~1 minuto
+
+
+📤 COMPARTIR CON CLIENTES:
+--------------------------------------------------------------------
+
+Una vez que esté online, podés:
+
+1. LINK DIRECTO
+   Enviá: https://TU-USUARIO.github.io/compresor-ppt
+
+2. QR CODE
+   Generá un QR en https://qr-code-generator.com
+   Link al compresor
+
+3. EMBED EN EMAILS
+   "Para comprimir tus presentaciones: [link]"
+
+4. AGREGAR A TU PORTFOLIO
+   Link desde bongstudio.com/tools
+
+
+🔧 ACTUALIZAR LA WEB:
+--------------------------------------------------------------------
+
+Para agregar features o cambiar diseño:
+
+1. Editá los archivos localmente
+2. Commit → Push en GitHub Desktop
+3. Esperá 1-2 minutos para que se actualice
+
+
+💡 IDEAS DE MEJORAS:
+--------------------------------------------------------------------
+
+Podés agregar después:
+• Batch processing (múltiples archivos)
+• Preview antes/después
+• Más formatos (Word, Excel)
+• Estadísticas de uso
+• Analytics con Google Analytics
+• PWA para instalar como app
+
+
+🎯 MARKETING:
+--------------------------------------------------------------------
+
+Podés promocionar en:
+• LinkedIn post de Bong Studio
+• Email signature: "🔧 Herramienta gratis: [link]"
+• Instagram stories mostrando cómo funciona
+• Al entregar proyectos a clientes
+• En presentaciones: "Comprimí esta presentación con nuestra tool"
+
+
+═══════════════════════════════════════════════════════════════════════
+
+TIPS FINALES:
+
+• GitHub Pages es 100% gratis
+• No hay límite de uso (es client-side)
+• SSL gratis (HTTPS automático)
+• Se actualiza solo cuando hacés push
+• Podés ver estadísticas en GitHub Insights
+
+Si tenés dudas o querés agregar features, avisame!
+
+═══════════════════════════════════════════════════════════════════════
