@@ -42,6 +42,7 @@
 
         /* File Type Selector - iOS Style */
         .file-type-selector {
+            position: relative;
             display: flex;
             background: rgba(24, 47, 37, 0.5);
             border-radius: 999px;
@@ -64,17 +65,32 @@
             text-transform: uppercase;
             letter-spacing: 0.05em;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: color 0.3s ease;
+            z-index: 3;
+            position: relative;
         }
 
         .selector-btn.active {
-            background: var(--bong-verde);
             color: var(--bong-verde-oscuro);
-            box-shadow: 0 2px 8px rgba(32, 198, 131, 0.3);
         }
 
         .selector-btn:hover:not(.active) {
             color: #ffffff;
+        }
+
+        /* Pill que se mueve - Estilo 3: Ultra Smooth */
+        .selector-pill {
+            position: absolute;
+            height: calc(100% - 8px);
+            width: calc(50% - 6px);
+            background: var(--bong-verde);
+            border-radius: 999px;
+            top: 4px;
+            left: 4px;
+            z-index: 2;
+            box-shadow: 0 2px 8px rgba(32, 198, 131, 0.3);
+            transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+            pointer-events: none;
         }
 
         /* Header */
@@ -643,6 +659,7 @@
         <div class="file-type-selector">
             <button class="selector-btn active" data-type="ppt">PPT</button>
             <button class="selector-btn" data-type="pdf">PDF</button>
+            <div class="selector-pill"></div>
         </div>
 
         <header>

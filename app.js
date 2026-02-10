@@ -118,6 +118,16 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
         
+        // Mover el pill - Estilo 3: Ultra Smooth
+        const pill = document.querySelector('.selector-pill');
+        if (pill) {
+            if (type === 'pdf') {
+                pill.style.transform = 'translateX(100%)';
+            } else {
+                pill.style.transform = 'translateX(0)';
+            }
+        }
+        
         console.log('Actualizando UI para:', type);
         
         if (type === 'ppt') {
