@@ -272,16 +272,21 @@ document.addEventListener('DOMContentLoaded', () => {
         // Detección de estancamiento
         const roundedPercent = Math.round(percent);
         
+        console.log(`📊 Progress: ${roundedPercent}% (last: ${lastProgress}%)`);
+        
         if (roundedPercent === lastProgress) {
             // El progreso no cambió
             if (!stuckTimer) {
-                // Iniciar timer de 5 segundos
+                console.log('⏳ Progress stuck, starting 2s timer...');
+                // Iniciar timer de 2 segundos (antes era 5s)
                 stuckTimer = setTimeout(() => {
+                    console.log('🔄 Timer triggered! Showing working loader...');
                     showWorkingLoader();
-                }, 5000);
+                }, 2000);
             }
         } else {
             // El progreso cambió, resetear todo
+            console.log('✅ Progress changed, resetting loader');
             lastProgress = roundedPercent;
             clearTimeout(stuckTimer);
             stuckTimer = null;
@@ -290,6 +295,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     function showWorkingLoader() {
+        console.log('🟢 showWorkingLoader() - Adding active class');
         workingLoader.classList.add('active');
         messageIndex = 0;
         workingLoaderLabel.textContent = workingMessages[messageIndex];
@@ -298,10 +304,12 @@ document.addEventListener('DOMContentLoaded', () => {
         messageTimer = setInterval(() => {
             messageIndex = (messageIndex + 1) % workingMessages.length;
             workingLoaderLabel.textContent = workingMessages[messageIndex];
+            console.log(`🔄 Message changed to: ${workingMessages[messageIndex]}`);
         }, 3000);
     }
     
     function hideWorkingLoader() {
+        console.log('🔴 hideWorkingLoader() - Removing active class');
         workingLoader.classList.remove('active');
         clearInterval(messageTimer);
         messageTimer = null;
