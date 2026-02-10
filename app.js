@@ -10,6 +10,18 @@ document.addEventListener('DOMContentLoaded', () => {
     let compressedBlob = null;
     let currentFileType = 'ppt';
     
+    // Variables para working loader
+    let lastProgress = -1;
+    let stuckTimer = null;
+    let messageTimer = null;
+    let messageIndex = 0;
+    const workingMessages = [
+        'Trabajando...',
+        'Comprimiendo imágenes...',
+        'Optimizando calidad...',
+        'Casi listo...'
+    ];
+    
     // Elements
     const dropZone = document.getElementById('dropZone');
     const fileInput = document.getElementById('fileInput');
@@ -23,6 +35,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const progressLabel = document.getElementById('progressLabel');
     const progressFill = document.getElementById('progressFill');
     const progressText = document.getElementById('progressText');
+    const workingLoader = document.getElementById('workingLoader');
+    const workingLoaderLabel = document.getElementById('workingLoaderLabel');
     const results = document.getElementById('results');
     const originalSizeEl = document.getElementById('originalSize');
     const finalSizeEl = document.getElementById('finalSize');
@@ -254,6 +268,51 @@ document.addEventListener('DOMContentLoaded', () => {
         progressFill.style.width = percent + '%';
         progressText.textContent = Math.round(percent) + '%';
         progressLabel.textContent = label;
+        
+        // Detección de estancamiento
+        const roundedPercent = Math.round(percent);
+        
+        if (roundedPercent === lastProgress) {
+            // El progreso no cambió
+            if (!stuckTimer) {
+                // Iniciar timer de 5 segundos
+                stuckTimer = setTimeout(() => {
+                    showWorkingLoader();
+                }, 5000);
+            }
+        } else {
+            // El progreso cambió, resetear todo
+            lastProgress = roundedPercent;
+            clearTimeout(stuckTimer);
+            stuckTimer = null;
+            hideWorkingLoader();
+        }
+    }
+    
+    function showWorkingLoader() {
+        workingLoader.classList.add('active');
+        messageIndex = 0;
+        workingLoaderLabel.textContent = workingMessages[messageIndex];
+        
+        // Rotar mensajes cada 3 segundos
+        messageTimer = setInterval(() => {
+            messageIndex = (messageIndex + 1) % workingMessages.length;
+            workingLoaderLabel.textContent = workingMessages[messageIndex];
+        }, 3000);
+    }
+    
+    function hideWorkingLoader() {
+        workingLoader.classList.remove('active');
+        clearInterval(messageTimer);
+        messageTimer = null;
+        messageIndex = 0;
+    }
+    
+    function resetWorkingLoader() {
+        lastProgress = -1;
+        clearTimeout(stuckTimer);
+        stuckTimer = null;
+        hideWorkingLoader();
     }
     
     function hasTransparency(imageData) {
@@ -313,6 +372,7 @@ document.addEventListener('DOMContentLoaded', () => {
         compressBtn.disabled = true;
         progressContainer.classList.add('active');
         results.classList.remove('active');
+        resetWorkingLoader(); // Reset loader state
         
         const quality = parseInt(qualitySlider.value);
         const originalSize = selectedFile.size;
@@ -396,6 +456,7 @@ document.addEventListener('DOMContentLoaded', () => {
         compressBtn.disabled = true;
         progressContainer.classList.add('active');
         results.classList.remove('active');
+        resetWorkingLoader(); // Reset loader state
         
         const quality = parseInt(qualitySlider.value);
         const originalSize = selectedFile.size;

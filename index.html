@@ -239,35 +239,59 @@
         .quality-value.medium { color: #ffaa00; }
         .quality-value.low { color: #ff6666; }
 
+        /* Slider estilo Android/Material */
         .slider {
-            width: 100%;
-            height: 8px;
-            border-radius: 5px;
-            background: rgba(24, 47, 37, 0.8);
-            outline: none;
             -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 4px;
+            background: var(--bong-verde);
+            border-radius: 2px;
+            outline: none;
+            cursor: pointer;
             margin-bottom: 15px;
         }
 
+        /* Thumb - Webkit (Chrome, Safari, Edge) */
         .slider::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
-            width: 24px;
-            height: 24px;
+            width: 20px;
+            height: 20px;
+            background: #f0efed;
+            border: 3px solid var(--bong-verde);
             border-radius: 50%;
-            background: var(--bong-verde);
             cursor: pointer;
-            box-shadow: 0 0 10px rgba(32, 198, 131, 0.5);
+            box-shadow: 0 2px 8px rgba(32, 198, 131, 0.3);
+            transition: transform 0.2s ease;
         }
 
+        .slider::-webkit-slider-thumb:hover {
+            transform: scale(1.1);
+        }
+
+        .slider::-webkit-slider-thumb:active {
+            transform: scale(0.95);
+        }
+
+        /* Thumb - Firefox */
         .slider::-moz-range-thumb {
-            width: 24px;
-            height: 24px;
+            width: 20px;
+            height: 20px;
+            background: #f0efed;
+            border: 3px solid var(--bong-verde);
             border-radius: 50%;
-            background: var(--bong-verde);
             cursor: pointer;
-            border: none;
-            box-shadow: 0 0 10px rgba(32, 198, 131, 0.5);
+            box-shadow: 0 2px 8px rgba(32, 198, 131, 0.3);
+            transition: transform 0.2s ease;
+        }
+
+        .slider::-moz-range-thumb:hover {
+            transform: scale(1.1);
+        }
+
+        .slider::-moz-range-thumb:active {
+            transform: scale(0.95);
         }
 
         .quality-labels {
@@ -350,6 +374,53 @@
             color: var(--bong-verde);
             font-weight: 700;
             font-family: 'Space Mono', monospace;
+        }
+
+        /* Loader indeterminado (cuando se estanca) */
+        .working-loader {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(149, 181, 169, 0.1);
+        }
+
+        .working-loader.active {
+            display: flex;
+        }
+
+        .working-loader-label {
+            color: var(--bong-gris);
+            font-size: 13px;
+            margin-bottom: 12px;
+            text-align: center;
+            font-family: 'Space Mono', monospace;
+        }
+
+        .working-loader-bar-container {
+            width: 130px;
+            height: 6px;
+            background: rgba(32, 198, 131, 0.2);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .working-loader-bar {
+            height: 100%;
+            width: 40%;
+            background: var(--bong-verde);
+            border-radius: 3px;
+            animation: barSlide 1.5s ease-in-out infinite;
+        }
+
+        @keyframes barSlide {
+            0% {
+                transform: translateX(-100%);
+            }
+            100% {
+                transform: translateX(350%);
+            }
         }
 
         /* Results */
@@ -777,6 +848,14 @@
                 <div class="progress-fill" id="progressFill"></div>
             </div>
             <div class="progress-text" id="progressText">0%</div>
+            
+            <!-- Loader cuando se estanca -->
+            <div class="working-loader" id="workingLoader">
+                <div class="working-loader-label" id="workingLoaderLabel">Trabajando...</div>
+                <div class="working-loader-bar-container">
+                    <div class="working-loader-bar"></div>
+                </div>
+            </div>
         </div>
 
         <!-- Results -->
