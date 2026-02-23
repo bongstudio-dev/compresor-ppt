@@ -1,911 +1,207 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bong Studio - Compresor PPT</title>
-    <meta name="description" content="Comprime presentaciones PowerPoint online. Reduce hasta 70% del tamaño manteniendo la calidad. Gratis y sin registro.">
-    <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=satoshi@700,600,500,400&display=swap">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <meta name="description" content="Bong Studio Compresor - Compresión de archivos PPT y PDF profesional, gratuita y privada.">
+    <meta name="theme-color" content="#004831">
+    <title>Compresor de presentaciones - Bong Studio</title>
+
+    <link href="https://api.fontshare.com/v2/css?f[]=satoshi@700,600,500,400&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="styles.css">
+
     <script src="https://unpkg.com/feather-icons"></script>
-    <style>
-        :root {
-            --bong-verde-oscuro: #004831;
-            --bong-verde: #20C683;
-            --bong-gris: #95B5A9;
-            --bong-gris-oscuro: #182F25;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Satoshi', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-            background: var(--bong-verde-oscuro);
-            color: #ffffff;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            width: 100%;
-        }
-
-        /* File Type Selector - iOS Style */
-        .file-type-selector {
-            position: relative;
-            display: flex;
-            background: rgba(24, 47, 37, 0.5);
-            border-radius: 999px;
-            padding: 4px;
-            margin: 0 auto 40px;
-            max-width: 300px;
-            gap: 4px;
-        }
-
-        .selector-btn {
-            flex: 1;
-            padding: 12px 24px;
-            border: none;
-            border-radius: 999px;
-            background: transparent;
-            color: var(--bong-gris);
-            font-family: 'Space Mono', monospace;
-            font-size: 13px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            cursor: pointer;
-            transition: color 0.3s ease;
-            z-index: 3;
-            position: relative;
-        }
-
-        .selector-btn.active {
-            color: var(--bong-verde-oscuro);
-        }
-
-        .selector-btn:hover:not(.active) {
-            color: #ffffff;
-        }
-
-        /* Pill que se mueve - Estilo 3: Ultra Smooth */
-        .selector-pill {
-            position: absolute;
-            height: calc(100% - 8px);
-            width: calc(50% - 6px);
-            background: var(--bong-verde);
-            border-radius: 999px;
-            top: 4px;
-            left: 4px;
-            z-index: 2;
-            box-shadow: 0 2px 8px rgba(32, 198, 131, 0.3);
-            transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
-            pointer-events: none;
-        }
-
-        /* Header */
-        header {
-            text-align: center;
-            margin-bottom: 40px;
-            padding: 40px 20px;
-        }
-
-        .logo {
-            font-size: 48px;
-            font-weight: 600;
-            color: var(--bong-verde);
-            margin-bottom: 10px;
-            letter-spacing: -0.05em;
-        }
-
-        .subtitle {
-            color: var(--bong-gris);
-            font-size: 14px;
-            margin-bottom: 30px;
-            font-family: 'Space Mono', monospace;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-        }
-
-        .info-badge {
-            display: inline-block;
-            background: rgba(32, 198, 131, 0.15);
-            color: var(--bong-verde);
-            padding: 8px 16px;
-            border-radius: 999px;
-            font-size: 11px;
-            font-weight: 700;
-            font-family: 'Space Mono', monospace;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        /* Drop Zone */
-        .drop-zone {
-            background: rgba(24, 47, 37, 0.5);
-            border: 2px dashed rgba(32, 198, 131, 0.3);
-            border-radius: 20px;
-            padding: 60px 40px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-bottom: 30px;
-        }
-
-        .drop-zone:hover {
-            border-color: var(--bong-verde);
-            background: rgba(24, 47, 37, 0.7);
-        }
-
-        .drop-zone.dragging {
-            border-color: var(--bong-verde);
-            background: rgba(32, 198, 131, 0.1);
-            transform: scale(1.02);
-        }
-
-        .drop-zone-icon {
-            margin-bottom: 20px;
-            color: var(--bong-verde);
-        }
-        
-        .drop-zone-icon i {
-            display: block;
-            margin: 0 auto;
-        }
-
-        .drop-zone h2 {
-            font-size: 24px;
-            margin-bottom: 10px;
-            letter-spacing: -0.02em;
-        }
-
-        .drop-zone p {
-            color: var(--bong-gris);
-            font-size: 14px;
-            font-family: 'Space Mono', monospace;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .file-input {
-            display: none;
-        }
-
-        /* File Info */
-        .file-info {
-            background: rgba(24, 47, 37, 0.5);
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 30px;
-            display: none;
-        }
-
-        .file-info.active {
-            display: block;
-        }
-
-        .file-name {
-            font-size: 18px;
-            font-weight: 600;
-            color: var(--bong-verde);
-            margin-bottom: 5px;
-        }
-
-        .file-size {
-            color: var(--bong-gris);
-            font-size: 12px;
-            font-family: 'Space Mono', monospace;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        /* Quality Slider */
-        .quality-control {
-            background: rgba(24, 47, 37, 0.5);
-            border-radius: 15px;
-            padding: 30px;
-            margin-bottom: 30px;
-        }
-
-        .quality-label {
-            font-size: 11px;
-            font-weight: 700;
-            color: var(--bong-gris);
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            margin-bottom: 15px;
-            font-family: 'Space Mono', monospace;
-        }
-
-        .quality-value {
-            font-size: 32px;
-            font-weight: 700;
-            margin-bottom: 20px;
-            transition: color 0.3s ease;
-        }
-
-        .quality-value.high { color: var(--bong-verde); }
-        .quality-value.recommended { color: var(--bong-verde); }
-        .quality-value.medium { color: #ffaa00; }
-        .quality-value.low { color: #ff6666; }
-
-        /* Slider estilo Android/Material */
-        .slider {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 100%;
-            height: 4px;
-            background: var(--bong-verde);
-            border-radius: 2px;
-            outline: none;
-            cursor: pointer;
-            margin-bottom: 15px;
-        }
-
-        /* Thumb - Webkit (Chrome, Safari, Edge) */
-        .slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 20px;
-            height: 20px;
-            background: #f0efed;
-            border: 3px solid var(--bong-verde);
-            border-radius: 50%;
-            cursor: pointer;
-            box-shadow: 0 2px 8px rgba(32, 198, 131, 0.3);
-            transition: transform 0.2s ease;
-        }
-
-        .slider::-webkit-slider-thumb:hover {
-            transform: scale(1.1);
-        }
-
-        .slider::-webkit-slider-thumb:active {
-            transform: scale(0.95);
-        }
-
-        /* Thumb - Firefox */
-        .slider::-moz-range-thumb {
-            width: 20px;
-            height: 20px;
-            background: #f0efed;
-            border: 3px solid var(--bong-verde);
-            border-radius: 50%;
-            cursor: pointer;
-            box-shadow: 0 2px 8px rgba(32, 198, 131, 0.3);
-            transition: transform 0.2s ease;
-        }
-
-        .slider::-moz-range-thumb:hover {
-            transform: scale(1.1);
-        }
-
-        .slider::-moz-range-thumb:active {
-            transform: scale(0.95);
-        }
-
-        .quality-labels {
-            display: flex;
-            justify-content: space-between;
-            font-size: 10px;
-            color: var(--bong-gris);
-            font-family: 'Space Mono', monospace;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        /* Compress Button */
-        .compress-btn {
-            width: 100%;
-            padding: 18px 24px;
-            font-size: 13px;
-            font-weight: 700;
-            color: var(--bong-verde-oscuro);
-            background: var(--bong-verde);
-            border: none;
-            border-radius: 999px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            margin-bottom: 30px;
-            font-family: 'Space Mono', monospace;
-        }
-
-        .compress-btn:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(32, 198, 131, 0.3);
-        }
-
-        .compress-btn:disabled {
-            opacity: 0.3;
-            cursor: not-allowed;
-        }
-
-        /* Progress */
-        .progress-container {
-            background: rgba(24, 47, 37, 0.5);
-            border-radius: 15px;
-            padding: 30px;
-            margin-bottom: 30px;
-            display: none;
-        }
-
-        .progress-container.active {
-            display: block;
-        }
-
-        .progress-label {
-            font-size: 11px;
-            color: var(--bong-gris);
-            margin-bottom: 10px;
-            font-family: 'Space Mono', monospace;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 10px;
-            background: rgba(24, 47, 37, 0.8);
-            border-radius: 999px;
-            overflow: hidden;
-            margin-bottom: 15px;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: var(--bong-verde);
-            width: 0%;
-            transition: width 0.3s ease;
-        }
-
-        .progress-text {
-            color: var(--bong-verde);
-            font-weight: 700;
-            font-family: 'Space Mono', monospace;
-        }
-
-        /* Loader indeterminado (cuando se estanca) */
-        .working-loader {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid rgba(149, 181, 169, 0.1);
-        }
-
-        .working-loader.active {
-            display: flex;
-        }
-
-        .working-loader-label {
-            color: var(--bong-gris);
-            font-size: 13px;
-            margin-bottom: 12px;
-            text-align: center;
-            font-family: 'Space Mono', monospace;
-        }
-
-        .working-loader-bar-container {
-            width: 130px;
-            height: 6px;
-            background: rgba(32, 198, 131, 0.2);
-            border-radius: 3px;
-            overflow: hidden;
-        }
-
-        .working-loader-bar {
-            height: 100%;
-            width: 40%;
-            background: var(--bong-verde);
-            border-radius: 3px;
-            animation: barSlide 1.5s ease-in-out infinite;
-        }
-
-        @keyframes barSlide {
-            0% {
-                transform: translateX(-100%);
-            }
-            100% {
-                transform: translateX(350%);
-            }
-        }
-
-        /* Results */
-        .results {
-            background: rgba(24, 47, 37, 0.5);
-            border-radius: 15px;
-            padding: 30px;
-            display: none;
-        }
-
-        .results.active {
-            display: block;
-        }
-
-        .results-title {
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 20px;
-            text-align: center;
-            letter-spacing: -0.02em;
-        }
-
-        .results-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-
-        .stat {
-            text-align: center;
-            padding: 20px;
-            background: rgba(24, 47, 37, 0.8);
-            border-radius: 10px;
-        }
-
-        .stat-label {
-            font-size: 10px;
-            color: var(--bong-gris);
-            margin-bottom: 5px;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            font-family: 'Space Mono', monospace;
-        }
-
-        .stat-value {
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--bong-verde);
-        }
-
-        .download-btn {
-            width: 100%;
-            padding: 18px 24px;
-            font-size: 13px;
-            font-weight: 700;
-            color: var(--bong-verde-oscuro);
-            background: var(--bong-verde);
-            border: none;
-            border-radius: 999px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            font-family: 'Space Mono', monospace;
-        }
-
-        .download-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(32, 198, 131, 0.3);
-        }
-
-        /* Footer */
-        footer {
-            text-align: center;
-            margin-top: auto;
-            padding: 40px 20px;
-            color: var(--bong-gris);
-            font-size: 11px;
-            font-family: 'Space Mono', monospace;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
-
-        footer a {
-            color: var(--bong-verde);
-            text-decoration: none;
-        }
-
-        footer a:hover {
-            text-decoration: underline;
-        }
-        
-        footer p:last-child {
-            font-size: 9px;
-            text-transform: none;
-            letter-spacing: normal;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .logo {
-                font-size: 36px;
-            }
-
-            .drop-zone {
-                padding: 40px 20px;
-            }
-
-            .quality-value {
-                font-size: 24px;
-            }
-        }
-
-        /* PDF Advanced Controls */
-        .pdf-advanced-controls {
-            margin: 25px 0;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .advanced-section {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(149, 181, 169, 0.1);
-            border-radius: 15px;
-            padding: 20px;
-        }
-
-        .section-title {
-            font-family: 'Space Mono', monospace;
-            font-size: 12px;
-            font-weight: 700;
-            letter-spacing: 0.1em;
-            color: #95B5A9;
-            margin-bottom: 20px;
-            text-transform: uppercase;
-        }
-
-        .pdf-mode-selector {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 25px;
-        }
-
-        .pdf-mode-btn {
-            background: rgba(255, 255, 255, 0.03);
-            border: 2px solid rgba(149, 181, 169, 0.2);
-            border-radius: 12px;
-            padding: 15px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-align: left;
-            color: #95B5A9;
-            font-family: 'Satoshi', sans-serif;
-        }
-
-        .pdf-mode-btn:hover {
-            background: rgba(32, 198, 131, 0.05);
-            border-color: rgba(32, 198, 131, 0.3);
-        }
-
-        .pdf-mode-btn.active {
-            background: rgba(32, 198, 131, 0.1);
-            border-color: #20C683;
-            color: #20C683;
-        }
-
-        .pdf-mode-btn i {
-            display: block;
-            margin-bottom: 8px;
-        }
-
-        .pdf-mode-btn span {
-            display: block;
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 4px;
-        }
-
-        .pdf-mode-btn small {
-            display: block;
-            font-size: 11px;
-            opacity: 0.7;
-            font-weight: 400;
-        }
-
-        .pdf-dpi-control {
-            margin-bottom: 25px;
-        }
-
-        .control-label {
-            display: block;
-            font-family: 'Space Mono', monospace;
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: 0.1em;
-            color: #95B5A9;
-            margin-bottom: 12px;
-            text-transform: uppercase;
-        }
-
-        .dpi-options {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-        }
-
-        .dpi-btn {
-            background: rgba(255, 255, 255, 0.03);
-            border: 2px solid rgba(149, 181, 169, 0.2);
-            border-radius: 10px;
-            padding: 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-align: center;
-            color: #95B5A9;
-        }
-
-        .dpi-btn:hover {
-            background: rgba(32, 198, 131, 0.05);
-            border-color: rgba(32, 198, 131, 0.3);
-        }
-
-        .dpi-btn.active {
-            background: rgba(32, 198, 131, 0.1);
-            border-color: #20C683;
-            color: #20C683;
-        }
-
-        .dpi-btn strong {
-            display: block;
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 4px;
-        }
-
-        .dpi-btn span {
-            display: block;
-            font-size: 11px;
-            opacity: 0.8;
-        }
-
-        .pdf-preservation {
-            margin-bottom: 0;
-        }
-
-        .checkbox-label {
-            display: flex;
-            align-items: center;
-            padding: 12px;
-            margin-bottom: 8px;
-            background: rgba(255, 255, 255, 0.02);
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            font-size: 14px;
-            color: #95B5A9;
-        }
-
-        .checkbox-label:hover {
-            background: rgba(32, 198, 131, 0.05);
-        }
-
-        .checkbox-label input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            margin-right: 12px;
-            cursor: pointer;
-            accent-color: #20C683;
-        }
-
-        .checkbox-label span {
-            flex: 1;
-        }
-
-        .preservation-note {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding: 12px;
-            margin-bottom: 12px;
-            background: rgba(32, 198, 131, 0.1);
-            border: 1px solid rgba(32, 198, 131, 0.3);
-            border-radius: 8px;
-            font-size: 13px;
-            color: #95B5A9;
-        }
-
-        .preservation-note i {
-            flex-shrink: 0;
-            color: #20C683;
-        }
-
-        .checkbox-label.disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-        }
-
-        .checkbox-label.disabled input[type="checkbox"] {
-            cursor: not-allowed;
-        }
-    </style>
 </head>
 <body>
-    <div class="container">
-        <!-- File Type Selector -->
-        <div class="file-type-selector">
-            <button class="selector-btn active" data-type="ppt">PPT</button>
-            <button class="selector-btn" data-type="pdf">PDF</button>
-            <div class="selector-pill"></div>
-        </div>
-
-        <header>
-            <div class="logo">Compresor <span id="fileTypeLabel">PPT</span></div>
-            <p class="subtitle">Bong Studio</p>
-            <div class="info-badge">
-                <i data-feather="star" style="width: 16px; height: 16px; display: inline-block; vertical-align: middle; margin-right: 6px;"></i>
-                Gratis • Sin registro • Procesamiento local
-            </div>
-            <div class="info-badge pdf-info" style="margin-top: 10px; display: none;">
-                <i data-feather="link" style="width: 16px; height: 16px; display: inline-block; vertical-align: middle; margin-right: 6px;"></i>
-                Preserva links, anotaciones y marcadores
+    <div class="app-container">
+        <header class="header">
+            <a href="https://bongstudio.ar" target="_blank" rel="noopener noreferrer" class="brand" aria-label="Bong Studio">
+                <svg width="44" height="52" viewBox="0 0 218 256" fill="none" xmlns="http://www.w3.org/2000/svg" class="brand-icon">
+                    <path d="M193.605 17.9034C204.496 28.8698 211.483 44.1209 211.483 60.851C211.483 77.5812 204.496 92.7812 193.605 103.799C182.56 114.969 167.405 121.702 150.555 121.702C133.704 121.702 118.549 114.918 107.658 103.799C96.7672 92.8323 89.7806 77.5812 89.7806 60.851C89.7806 44.1209 96.7672 28.9209 107.658 17.9034C118.549 6.73288 133.858 0 150.555 0C167.251 0 182.56 6.78388 193.605 17.9034Z" fill="currentColor"/>
+                    <path d="M73.0789 18.6733C75.7969 25.7411 75.7969 34.1817 73.0789 41.4022C70.5148 47.809 65.9504 53.1987 59.1298 56.046C93.9512 62.0971 91.9512 119.707 52.8219 119.707H0V1.99536H48.104C61.0273 1.99536 69.3352 9.21569 73.0789 18.6733Z" fill="currentColor"/>
+                    <path d="M0 133.673L0.102501 253.38H44.8445H83.7949V135.199H44.8445V185.106L1.99878 133.673H0Z" fill="currentColor"/>
+                    <path d="M153.414 194.879L184.78 140.586C176.341 136.164 166.784 133.673 156.616 133.673C123.013 133.673 95.7653 160.921 95.7653 194.524C95.7653 228.127 123.013 255.375 156.616 255.375C190.219 255.375 217.315 228.33 217.467 194.829H153.414V194.879Z" fill="currentColor"/>
+                </svg>
+            </a>
+            <div class="controls">
+                <button id="lang-toggle" class="icon-btn" aria-label="Switch Language">
+                    <span class="lang-text">ES</span>
+                </button>
+                <button id="theme-toggle" class="icon-btn" aria-label="Toggle Theme">
+                    <i data-feather="sun" class="theme-icon-sun"></i>
+                    <i data-feather="moon" class="theme-icon-moon"></i>
+                </button>
             </div>
         </header>
 
-        <!-- Drop Zone -->
-        <div class="drop-zone" id="dropZone">
-            <div class="drop-zone-icon">
-                <i data-feather="upload" style="width: 64px; height: 64px; stroke-width: 1.5;"></i>
+        <main class="main-content">
+
+            <!-- ── PANTALLA 1: DROP ── -->
+            <div id="screen-drop" class="screen active">
+                <section class="hero">
+                    <h1 class="title anim-item" style="--delay:0s" data-i18n="title">Compresor de presentaciones</h1>
+                    <p class="hero-brand mono anim-item" style="--delay:0.08s">Bong Studio</p>
+                    <div class="hero-badge mono anim-item" style="--delay:0.16s">
+                        <svg class="badge-star" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                        Gratis &bull; Sin registro &bull; Procesamiento local
+                    </div>
+                </section>
+                <section class="upload-section anim-item" style="--delay:0.28s">
+                    <div id="dropzone" class="dropzone">
+                        <input type="file" id="file-input" hidden>
+                        <div class="dropzone-content empty-state">
+                            <i data-feather="upload-cloud" class="upload-icon"></i>
+                            <p class="drop-text">
+                                <span data-i18n="dropzone">Arrastrá tu archivo acá</span>
+                                <span class="sub-text" data-i18n="dropzoneOr">o hacé click para seleccionar</span>
+                            </p>
+                            <span class="drop-formats mono" data-i18n="dropFormats">PDF · PPTX</span>
+                        </div>
+                    </div>
+                </section>
             </div>
-            <h2 id="dropZoneTitle">Arrastrá tu presentación acá</h2>
-            <p id="dropZoneSubtitle">o hacé click para seleccionar</p>
-            <input type="file" id="fileInput" class="file-input" accept=".pptx">
-        </div>
 
-        <!-- File Info -->
-        <div class="file-info" id="fileInfo">
-            <div class="file-name" id="fileName"></div>
-            <div class="file-size" id="fileSize"></div>
-        </div>
+            <!-- ── PANTALLA 2: ARCHIVO CARGADO ── -->
+            <div id="screen-file" class="screen">
+                <div class="file-screen">
+                    <div class="file-screen-top">
+                        <span class="file-type-badge mono" id="file-type-badge">PPTX</span>
+                        <h2 class="file-screen-name" id="file-screen-name">archivo.pptx</h2>
+                        <p class="file-screen-size mono" id="file-screen-size">4.2 MB</p>
+                    </div>
 
-        <!-- Quality Control -->
-        <div class="quality-control" id="qualityControl">
-            <div class="quality-label">Calidad de compresión</div>
-            <div class="quality-value recommended" id="qualityValue">85%</div>
-            <input type="range" min="60" max="95" value="85" class="slider" id="qualitySlider">
-            <div class="quality-labels">
-                <span>Máxima compresión</span>
-                <span>Balance ideal</span>
-                <span>Máxima calidad</span>
-            </div>
-        </div>
+                    <div class="file-screen-controls">
+                        <div id="ppt-controls" class="mode-controls">
+                            <div class="control-header">
+                                <label data-i18n="quality">Calidad de compresión</label>
+                                <span id="quality-value" class="mono accent-text">85%</span>
+                            </div>
+                            <div class="slider-container">
+                                <input type="range" id="quality-slider" min="60" max="95" value="85" step="1">
+                            </div>
+                            <div class="slider-labels mono">
+                                <span>Max Comp.</span>
+                                <span>Balanced</span>
+                                <span>High Quality</span>
+                            </div>
+                        </div>
+                        <div id="pdf-controls" class="mode-controls hidden">
+                            <div class="control-group">
+                                <div class="control-header">
+                                    <label data-i18n="imageQuality">Calidad de imágenes</label>
+                                    <span id="pdf-quality-value" class="mono accent-text">75%</span>
+                                </div>
+                                <div class="slider-container">
+                                    <input type="range" id="pdf-quality-slider" min="40" max="95" value="75" step="5">
+                                </div>
+                                <div class="slider-labels mono">
+                                    <span data-i18n="maxCompression">Más compresión</span>
+                                    <span data-i18n="betterQuality">Mejor calidad</span>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <label class="group-label" data-i18n="maxDPI">Resolución máxima de imágenes</label>
+                                <div class="radio-pills mono">
+                                    <label class="radio-pill"><input type="radio" name="pdf-dpi" value="72"><span>72 DPI</span></label>
+                                    <label class="radio-pill"><input type="radio" name="pdf-dpi" value="100"><span>100 DPI</span></label>
+                                    <label class="radio-pill"><input type="radio" name="pdf-dpi" value="150" checked><span>150 DPI</span></label>
+                                    <label class="radio-pill"><input type="radio" name="pdf-dpi" value="300"><span>300 DPI</span></label>
+                                </div>
+                            </div>
+                            <div class="control-group">
+                                <div class="checkbox-group">
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="remove-metadata">
+                                        <span data-i18n="removeMetadata">Eliminar metadatos del documento</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-        <!-- PDF Advanced Controls -->
-        <div class="pdf-advanced-controls" id="pdfAdvancedControls" style="display: none;">
-            <div class="advanced-section">
-                <div class="section-title">
-                    <i data-feather="settings" style="width: 18px; height: 18px; display: inline-block; vertical-align: middle; margin-right: 8px;"></i>
-                    OPCIONES AVANZADAS
-                </div>
-                
-                <div class="pdf-mode-selector">
-                    <button class="pdf-mode-btn active" data-mode="images-only" id="modeImagesOnly">
-                        <i data-feather="image" style="width: 16px; height: 16px;"></i>
-                        <span>Solo comprimir imágenes</span>
-                        <small>Seguro - No toca texto ni layout</small>
-                    </button>
-                    <button class="pdf-mode-btn" data-mode="full" id="modeFull">
-                        <i data-feather="zap" style="width: 16px; height: 16px;"></i>
-                        <span>Optimización completa</span>
-                        <small>Comprime todo - Mayor reducción</small>
-                    </button>
-                </div>
-
-                <div class="pdf-dpi-control">
-                    <label class="control-label">DPI DE IMÁGENES</label>
-                    <div class="dpi-options">
-                        <button class="dpi-btn" data-dpi="72">
-                            <strong>72</strong>
-                            <span>Pantalla</span>
+                    <div class="file-screen-actions">
+                        <button id="compress-btn" class="btn-primary btn-huge ripple-btn">
+                            <i data-feather="zap" class="btn-icon"></i>
+                            <span class="btn-text" data-i18n="compress">Comprimir</span>
+                            <i data-feather="loader" class="loading-icon spin hidden"></i>
                         </button>
-                        <button class="dpi-btn active" data-dpi="150">
-                            <strong>150</strong>
-                            <span>Recomendado <i data-feather="star" style="width: 14px; height: 14px; display: inline-block; vertical-align: middle; margin-left: 2px; fill: #20C683; stroke: #20C683;"></i></span>
-                        </button>
-                        <button class="dpi-btn" data-dpi="300">
-                            <strong>300</strong>
-                            <span>Imprenta</span>
+                        <button id="change-file-btn" class="btn-ghost">
+                            <i data-feather="refresh-cw"></i>
+                            <span data-i18n="changeFile">Cambiar archivo</span>
                         </button>
                     </div>
                 </div>
+            </div>
 
-                <div class="pdf-preservation">
-                    <label class="control-label">PRESERVAR</label>
-                    <div class="preservation-note" id="preservationNote" style="display: none;">
-                        <i data-feather="info" style="width: 16px; height: 16px;"></i>
-                        <span>El modo de optimización completa comprime todo para máxima reducción</span>
+            <!-- ── PANTALLA 3: COMPRIMIENDO ── -->
+            <div id="screen-compressing" class="screen">
+                <div class="compressing-ui">
+                    <div class="anim-logo-wrap">
+                        <svg width="64" height="75" viewBox="0 0 218 256" fill="none" xmlns="http://www.w3.org/2000/svg" class="anim-logo">
+                            <path d="M193.605 17.9034C204.496 28.8698 211.483 44.1209 211.483 60.851C211.483 77.5812 204.496 92.7812 193.605 103.799C182.56 114.969 167.405 121.702 150.555 121.702C133.704 121.702 118.549 114.918 107.658 103.799C96.7672 92.8323 89.7806 77.5812 89.7806 60.851C89.7806 44.1209 96.7672 28.9209 107.658 17.9034C118.549 6.73288 133.858 0 150.555 0C167.251 0 182.56 6.78388 193.605 17.9034Z" fill="currentColor"/>
+                            <path d="M73.0789 18.6733C75.7969 25.7411 75.7969 34.1817 73.0789 41.4022C70.5148 47.809 65.9504 53.1987 59.1298 56.046C93.9512 62.0971 91.9512 119.707 52.8219 119.707H0V1.99536H48.104C61.0273 1.99536 69.3352 9.21569 73.0789 18.6733Z" fill="currentColor"/>
+                            <path d="M0 133.673L0.102501 253.38H44.8445H83.7949V135.199H44.8445V185.106L1.99878 133.673H0Z" fill="currentColor"/>
+                            <path d="M153.414 194.879L184.78 140.586C176.341 136.164 166.784 133.673 156.616 133.673C123.013 133.673 95.7653 160.921 95.7653 194.524C95.7653 228.127 123.013 255.375 156.616 255.375C190.219 255.375 217.315 228.33 217.467 194.829H153.414V194.879Z" fill="currentColor"/>
+                        </svg>
                     </div>
-                    <label class="checkbox-label">
-                        <input type="checkbox" id="preserveText" checked>
-                        <span>✓ Texto editable (no rasterizar)</span>
-                    </label>
-                    <label class="checkbox-label">
-                        <input type="checkbox" id="preserveLinks" checked>
-                        <span>✓ Links y anotaciones</span>
-                    </label>
-                    <label class="checkbox-label">
-                        <input type="checkbox" id="preserveLayout" checked>
-                        <span>✓ Estructura de layout</span>
-                    </label>
+                    <p id="anim-status" class="anim-status fade-text" data-i18n="processing">Procesando...</p>
+                    <p id="anim-percent" class="anim-percent mono">0%</p>
                 </div>
             </div>
-        </div>
 
-        <!-- Compress Button -->
-        <button class="compress-btn" id="compressBtn" disabled>
-            <i data-feather="zap" style="width: 20px; height: 20px; display: inline-block; vertical-align: middle; margin-right: 8px;"></i>
-            Comprimir Presentación
-        </button>
-
-        <!-- Progress -->
-        <div class="progress-container" id="progressContainer">
-            <div class="progress-label" id="progressLabel">Procesando...</div>
-            <div class="progress-bar">
-                <div class="progress-fill" id="progressFill"></div>
-            </div>
-            <div class="progress-text" id="progressText">0%</div>
-            
-            <!-- Loader cuando se estanca -->
-            <div class="working-loader" id="workingLoader">
-                <div class="working-loader-label" id="workingLoaderLabel">Trabajando...</div>
-                <div class="working-loader-bar-container">
-                    <div class="working-loader-bar"></div>
+            <!-- ── PANTALLA 4: RESULTADOS ── -->
+            <div id="screen-results" class="screen">
+                <div class="results-screen">
+                    <div class="success-icon-container">
+                        <i data-feather="check-circle" class="success-icon"></i>
+                    </div>
+                    <h2 data-i18n="almostDone">¡Listo!</h2>
+                    <div class="stats-grid">
+                        <div class="stat-card staggered-1">
+                            <span class="stat-label" data-i18n="originalSize">Tamaño original</span>
+                            <span id="stat-original" class="stat-value mono">--</span>
+                        </div>
+                        <div class="stat-card staggered-2">
+                            <span class="stat-label" data-i18n="finalSize">Tamaño final</span>
+                            <span id="stat-final" class="stat-value mono accent-text">--</span>
+                        </div>
+                        <div class="stat-card staggered-3 highlight">
+                            <span class="stat-label" data-i18n="reduction">Reducción</span>
+                            <span id="stat-reduction" class="stat-value mono">--</span>
+                        </div>
+                    </div>
+                    <div class="results-actions">
+                        <button id="download-btn" class="btn-primary btn-huge ripple-btn staggered-4">
+                            <i data-feather="download" class="btn-icon"></i>
+                            <span data-i18n="download">Descargar</span>
+                        </button>
+                        <button id="compress-another-btn" class="btn-ghost staggered-4">
+                            <i data-feather="refresh-cw"></i>
+                            <span data-i18n="compressAnother">Comprimir otro</span>
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Results -->
-        <div class="results" id="results">
-            <h3 class="results-title">
-                <i data-feather="check-circle" style="width: 28px; height: 28px; display: inline-block; vertical-align: middle; margin-right: 8px;"></i>
-                Compresión completada
-            </h3>
-            <div class="results-stats">
-                <div class="stat">
-                    <div class="stat-label">Tamaño original</div>
-                    <div class="stat-value" id="originalSize">-</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-label">Tamaño final</div>
-                    <div class="stat-value" id="finalSize">-</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-label">Reducción</div>
-                    <div class="stat-value" id="reduction">-</div>
-                </div>
-            </div>
-            <button class="download-btn" id="downloadBtn">
-                <i data-feather="download" style="width: 20px; height: 20px; display: inline-block; vertical-align: middle; margin-right: 8px;"></i>
-                Descargar presentación comprimida
-            </button>
-        </div>
+        </main>
 
-        <footer>
-            <p>
-                Hecho con <i data-feather="heart" style="width: 16px; height: 16px; display: inline-block; vertical-align: middle; fill: var(--bong-verde); stroke: var(--bong-verde);"></i> por <a href="https://bongstudio.ar" target="_blank">Bong Studio</a>
+        <footer class="footer">
+            <p class="footer-brand">
+                Hecho con <i data-feather="heart" class="footer-heart"></i> por
+                <a href="https://bongstudio.ar" target="_blank" rel="noopener noreferrer">Bong Studio</a>
             </p>
-            <p style="margin-top: 10px; font-size: 12px;">
-                Todo el procesamiento se hace en tu navegador. Tus archivos nunca se suben a ningún servidor.
-            </p>
+            <p class="footer-privacy">Todo el procesamiento se hace en tu navegador. Tus archivos nunca se suben a ningún servidor.</p>
         </footer>
     </div>
+    <canvas id="confetti-canvas"></canvas>
 
-    <!-- JSZip Library -->
+    <!-- pdf-lib for PDF compression (pure JS, no WASM) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf-lib/1.17.1/pdf-lib.min.js"></script>
+    <!-- JSZip for PPT compression -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-    
-    <!-- Ghostscript WASM for PDF compression -->
-    <script type="module">
-        // Ghostscript WASM will be loaded dynamically when needed
-        window.ghostscriptReady = false;
-    </script>
-    
     <script src="app.js"></script>
-    
-    <!-- Initialize Feather Icons -->
     <script>
         feather.replace();
     </script>
