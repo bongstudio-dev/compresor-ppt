@@ -105,7 +105,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
     transition: opacity 0.2s ease;
 }
 .brand:hover { opacity: 1; }
-.brand-icon { color: var(--accent-primary); }
+.brand-icon { color: #306E56; }
 
 .controls { display: flex; gap: 16px; }
 .icon-btn {
@@ -283,7 +283,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 }
 .anim-logo-wrap { position: relative; display: flex; align-items: center; justify-content: center; }
 .anim-logo {
-    color: var(--accent-primary);
+    color: #306E56;
     display: block;
     animation: logoPulse 2.6s ease-in-out infinite;
 }
