@@ -105,7 +105,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
     transition: opacity 0.2s ease;
 }
 .brand:hover { opacity: 1; }
-.brand-icon { color: #306E56; }
+.brand-icon { color: var(--accent-primary); }
 
 .controls { display: flex; gap: 16px; }
 .icon-btn {
@@ -283,7 +283,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 }
 .anim-logo-wrap { position: relative; display: flex; align-items: center; justify-content: center; }
 .anim-logo {
-    color: color: #306E56;
+    color: var(--accent-primary);
     display: block;
     animation: logoPulse 2.6s ease-in-out infinite;
 }
@@ -651,6 +651,20 @@ input[type=range]:active::-moz-range-thumb { transform: scale(0.95); }
 
 /* Text swap Fade */
 .fade-text { transition: opacity 0.15s ease; }
+
+/* ═════════════════════════════════════════════════════════════════════════
+   SEO CONTENT
+   ═════════════════════════════════════════════════════════════════════════ */
+.seo-content {
+    max-width: 560px;
+    margin: 0 auto;
+    padding: 20px 20px 0;
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    line-height: 1.6;
+    text-align: center;
+    opacity: 0.45;
+}
 
 /* ═════════════════════════════════════════════════════════════════════════
    FOOTER
