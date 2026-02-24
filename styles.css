@@ -378,7 +378,7 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
 
 .dropzone {
     background-color: transparent;
-    border: 2px dashed transparent;
+    border: 2px dashed var(--border-emphasis);
     border-radius: 20px;
     padding: 60px 40px;
     text-align: center;
@@ -393,12 +393,11 @@ button { cursor: pointer; border: none; background: none; font-family: inherit; 
     justify-content: center;
 }
 .dropzone:hover {
-    border-color: var(--border-emphasis);
-    background-color: rgba(32, 198, 131, 0.03);
+    border-color: var(--accent-primary);
 }
 .dropzone.dragging {
     border-color: var(--accent-primary);
-    background-color: rgba(32, 198, 131, 0.06);
+    background-color: rgba(32, 198, 131, 0.05);
 }
 
 .empty-state { color: var(--text-secondary); transition: opacity var(--transition-fast); }

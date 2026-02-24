@@ -58,6 +58,7 @@ document.addEventListener('DOMContentLoaded', () => {
         pdfQualitySlider: document.getElementById('pdf-quality-slider'),
         pdfQualityValue: document.getElementById('pdf-quality-value'),
         removeMetadata: document.getElementById('remove-metadata'),
+        convertPngToJpeg: document.getElementById('convert-png-to-jpeg'),
         compressBtn: document.getElementById('compress-btn'),
         btnText: document.querySelector('.btn-text'),
         loadingIcon: document.querySelector('.loading-icon'),
@@ -89,9 +90,10 @@ document.addEventListener('DOMContentLoaded', () => {
             betterQuality: 'Mejor calidad',
             maxDPI: 'Resolución máxima de imágenes',
             removeMetadata: 'Eliminar metadatos del documento',
+            convertPngToJpeg: 'Convertir imágenes PNG a JPEG (más compresión)',
             originalSize: 'Tamaño original', finalSize: 'Tamaño final', reduction: 'Reducción',
             errorType: 'Formato no soportado. Por favor subí un PDF o PPTX.',
-            errorSize: 'El archivo es demasiado grande (Max 50MB).',
+            errorSize: 'El archivo es demasiado grande (Max 200MB).',
             extracting: 'Extrayendo archivo...',
             findingImages: 'Buscando imágenes...',
             compressingImages: 'Comprimiendo {current}/{total} imágenes...',
@@ -121,9 +123,10 @@ document.addEventListener('DOMContentLoaded', () => {
             betterQuality: 'Better quality',
             maxDPI: 'Max image resolution',
             removeMetadata: 'Remove document metadata',
+            convertPngToJpeg: 'Convert PNG images to JPEG (more compression)',
             originalSize: 'Original size', finalSize: 'Final size', reduction: 'Reduction',
             errorType: 'Unsupported format. Please upload a PDF or PPTX.',
-            errorSize: 'File is too large (Max 50MB).',
+            errorSize: 'File is too large (Max 200MB).',
             extracting: 'Extracting file...',
             findingImages: 'Finding images...',
             compressingImages: 'Compressing {current}/{total} images...',
@@ -263,7 +266,7 @@ document.addEventListener('DOMContentLoaded', () => {
         else if (name.endsWith('.pdf')) detectedType = 'pdf';
 
         if (!detectedType) { alert(t('errorType')); return; }
-        if (file.size > 50 * 1024 * 1024) { alert(t('errorSize')); return; }
+        if (file.size > 200 * 1024 * 1024) { alert(t('errorSize')); return; }
 
         state.fileType = detectedType;
         state.file = file;
@@ -555,6 +558,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 return false;
             }
 
+            // Helper: check if a PDF filter value includes FlateDecode
+            function hasFlateDecode(filter) {
+                if (!filter) return false;
+                if (filter instanceof PDFName) return filter.toString() === '/FlateDecode';
+                if (typeof filter.asArray === 'function') {
+                    return filter.asArray().some(f => f instanceof PDFName && f.toString() === '/FlateDecode');
+                }
+                return false;
+            }
+
             // Collect JPEG image streams — scan both the indirect objects table
             // AND each page's XObject resources (catches more PDFs)
             const seenRefs = new Set();
@@ -596,26 +609,65 @@ document.addEventListener('DOMContentLoaded', () => {
                 } catch (_) {}
             }
 
-            updateProgressUI(30, 'compressingImages', { current: 0, total: images.length });
+            // Optionally collect FlateDecode (PNG-type) RGB images for conversion to JPEG
+            const flatImages = [];
+            const convertPNG = elements.convertPngToJpeg?.checked ?? false;
+            if (convertPNG && typeof DecompressionStream !== 'undefined') {
+                for (const [ref, obj] of pdfDoc.context.enumerateIndirectObjects()) {
+                    if (!obj?.dict?.lookup || !(obj.contents instanceof Uint8Array)) continue;
+                    const key = ref?.toString?.() ?? String(ref);
+                    if (seenRefs.has(key)) continue;
+                    const subtype = obj.dict.lookupMaybe(PDFName.of('Subtype'), PDFName);
+                    if (subtype?.toString() !== '/Image') continue;
+                    const filter = obj.dict.lookup(PDFName.of('Filter'));
+                    if (!hasFlateDecode(filter)) continue;
+                    // Only DeviceRGB 8-bit (canvas always outputs RGB JPEG)
+                    const colorSpace = obj.dict.lookup(PDFName.of('ColorSpace'));
+                    if (!(colorSpace instanceof PDFName) || colorSpace.toString() !== '/DeviceRGB') continue;
+                    const bpc = obj.dict.lookupMaybe(PDFName.of('BitsPerComponent'), PDFNumber)?.asNumber() ?? 8;
+                    if (bpc !== 8) continue;
+                    const w = obj.dict.lookupMaybe(PDFName.of('Width'), PDFNumber)?.asNumber() ?? 0;
+                    const h = obj.dict.lookupMaybe(PDFName.of('Height'), PDFNumber)?.asNumber() ?? 0;
+                    if (w < 30 || h < 30) continue;
+                    seenRefs.add(key);
+                    flatImages.push({ ref, obj, w, h });
+                }
+            }
 
+            const totalImages = images.length + flatImages.length;
             let processed = 0;
+            updateProgressUI(30, 'compressingImages', { current: 0, total: Math.max(totalImages, 1) });
+
             for (const { ref, obj, w, h } of images) {
                 try {
                     await recompressJPEGStream(pdfDoc, ref, obj, w, h, quality, maxDim);
                 } catch (err) {
-                    console.warn('Skipping image at ref', ref.toString(), err.message);
+                    console.warn('Skipping JPEG image at ref', ref.toString(), err.message);
                 }
                 processed++;
                 updateProgressUI(
-                    30 + (processed / Math.max(images.length, 1)) * 60,
+                    30 + (processed / Math.max(totalImages, 1)) * 60,
                     'compressingImages',
-                    { current: processed, total: images.length }
+                    { current: processed, total: Math.max(totalImages, 1) }
                 );
             }
 
-            if (images.length === 0) {
-                // Still save with stream compression even if no JPEG images found
-                console.info('No JPEG images found — applying structure compression only');
+            for (const { ref, obj, w, h } of flatImages) {
+                try {
+                    await convertFlatDecodeToJPEG(pdfDoc, ref, obj, w, h, quality, maxDim);
+                } catch (err) {
+                    console.warn('Skipping FlateDecode image at ref', ref.toString(), err.message);
+                }
+                processed++;
+                updateProgressUI(
+                    30 + (processed / Math.max(totalImages, 1)) * 60,
+                    'compressingImages',
+                    { current: processed, total: Math.max(totalImages, 1) }
+                );
+            }
+
+            if (totalImages === 0) {
+                console.info('No compressible images found — applying structure compression only');
             }
 
             updateProgressUI(90, 'savingPDF');
@@ -679,6 +731,134 @@ document.addEventListener('DOMContentLoaded', () => {
         // PDFLib.PDFRawStream is exported in the browser bundle
         const newStream = PDFLib.PDFRawStream.of(obj.dict, newBytes);
         pdfDoc.context.assign(ref, newStream);
+    }
+
+    // ═══════════════════════════════════════════════════════════════════════
+    // PDF FLATDECODE → JPEG CONVERSION (PNG-type images)
+    // ═══════════════════════════════════════════════════════════════════════
+
+    /** Decompress zlib/deflate bytes using the native DecompressionStream API */
+    async function decompressStream(bytes) {
+        const run = async (format) => {
+            const ds = new DecompressionStream(format);
+            const writer = ds.writable.getWriter();
+            const reader = ds.readable.getReader();
+            writer.write(bytes);
+            writer.close();
+            const chunks = [];
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+                chunks.push(value);
+            }
+            reader.releaseLock();
+            const len = chunks.reduce((a, c) => a + c.length, 0);
+            const out = new Uint8Array(len);
+            let off = 0;
+            for (const c of chunks) { out.set(c, off); off += c.length; }
+            return out;
+        };
+        try { return await run('deflate'); } catch (_) {}      // zlib (most PDFs)
+        try { return await run('deflate-raw'); } catch (_) {}  // raw deflate (some PDFs)
+        throw new Error('Cannot decompress stream');
+    }
+
+    /**
+     * Undo PNG row filtering (predictor 10-15 in PDF DecodeParms).
+     * Each row starts with a 1-byte filter type (0=None,1=Sub,2=Up,3=Avg,4=Paeth).
+     */
+    function applyPNGUnpredictor(data, width, numComponents) {
+        const rowStride = width * numComponents;
+        const numRows = Math.floor(data.length / (rowStride + 1));
+        const out = new Uint8Array(rowStride * numRows);
+        for (let row = 0; row < numRows; row++) {
+            const base = row * (rowStride + 1);
+            const ft = data[base];
+            const outBase = row * rowStride;
+            for (let i = 0; i < rowStride; i++) {
+                const x = data[base + 1 + i];
+                const a = i >= numComponents ? out[outBase + i - numComponents] : 0;
+                const b = row > 0 ? out[(row - 1) * rowStride + i] : 0;
+                const c = (row > 0 && i >= numComponents) ? out[(row - 1) * rowStride + i - numComponents] : 0;
+                switch (ft) {
+                    case 0: out[outBase + i] = x; break;
+                    case 1: out[outBase + i] = (x + a) & 0xFF; break;
+                    case 2: out[outBase + i] = (x + b) & 0xFF; break;
+                    case 3: out[outBase + i] = (x + Math.floor((a + b) / 2)) & 0xFF; break;
+                    case 4: {
+                        const p = a + b - c;
+                        const pa = Math.abs(p - a), pb = Math.abs(p - b), pc = Math.abs(p - c);
+                        const pr = (pa <= pb && pa <= pc) ? a : (pb <= pc ? b : c);
+                        out[outBase + i] = (x + pr) & 0xFF;
+                        break;
+                    }
+                    default: out[outBase + i] = x;
+                }
+            }
+        }
+        return out;
+    }
+
+    /**
+     * Converts a FlateDecode DeviceRGB image stream to JPEG inside the PDF.
+     * Handles PNG predictor rows. Skips if JPEG result is not smaller.
+     */
+    async function convertFlatDecodeToJPEG(pdfDoc, ref, obj, w, h, quality, maxDim) {
+        const { PDFName, PDFNumber } = PDFLib;
+
+        // Check for PNG predictor in DecodeParms
+        const decodeParms = obj.dict.lookup(PDFName.of('DecodeParms'));
+        let predictor = 1;
+        if (decodeParms && typeof decodeParms.lookupMaybe === 'function') {
+            predictor = decodeParms.lookupMaybe(PDFName.of('Predictor'), PDFNumber)?.asNumber() ?? 1;
+        }
+
+        // Decompress the stream
+        const raw = await decompressStream(obj.contents);
+
+        // Apply PNG predictor if needed (predictor 10-15 = PNG row filters)
+        const pixels = predictor >= 10 ? applyPNGUnpredictor(raw, w, 3) : raw;
+        if (pixels.length < w * h * 3) throw new Error('Insufficient pixel data after decompression');
+
+        // Build canvas from raw RGB bytes
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        const imgData = ctx.createImageData(w, h);
+        for (let i = 0; i < w * h; i++) {
+            imgData.data[i * 4]     = pixels[i * 3];
+            imgData.data[i * 4 + 1] = pixels[i * 3 + 1];
+            imgData.data[i * 4 + 2] = pixels[i * 3 + 2];
+            imgData.data[i * 4 + 3] = 255;
+        }
+        ctx.putImageData(imgData, 0, 0);
+
+        // Apply DPI downsampling if needed
+        let finalCanvas = canvas;
+        let newW = w, newH = h;
+        if (newW > maxDim || newH > maxDim) {
+            const ratio = Math.min(maxDim / newW, maxDim / newH);
+            newW = Math.max(1, Math.round(newW * ratio));
+            newH = Math.max(1, Math.round(newH * ratio));
+            finalCanvas = document.createElement('canvas');
+            finalCanvas.width = newW; finalCanvas.height = newH;
+            finalCanvas.getContext('2d').drawImage(canvas, 0, 0, newW, newH);
+        }
+
+        const newBlob = await new Promise(res => finalCanvas.toBlob(res, 'image/jpeg', quality / 100));
+        if (!newBlob || newBlob.size >= obj.contents.length) return; // keep original if not smaller
+
+        const newBytes = new Uint8Array(await newBlob.arrayBuffer());
+
+        // Patch dict: swap FlateDecode → DCTDecode, remove PNG predictor and transparency mask
+        obj.dict.set(PDFName.of('Filter'), PDFName.of('DCTDecode'));
+        try { obj.dict.delete(PDFName.of('DecodeParms')); } catch (_) {}
+        try { obj.dict.delete(PDFName.of('SMask')); } catch (_) {}
+        obj.dict.set(PDFName.of('Length'), PDFNumber.of(newBytes.length));
+        obj.dict.set(PDFName.of('Width'), PDFNumber.of(newW));
+        obj.dict.set(PDFName.of('Height'), PDFNumber.of(newH));
+
+        pdfDoc.context.assign(ref, PDFLib.PDFRawStream.of(obj.dict, newBytes));
     }
 
     // ═══════════════════════════════════════════════════════════════════════

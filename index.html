@@ -104,9 +104,9 @@
                             <div class="control-group">
                                 <label class="group-label" data-i18n="maxDPI">Resolución máxima de imágenes</label>
                                 <div class="radio-pills mono">
-                                    <label class="radio-pill"><input type="radio" name="pdf-dpi" value="72"><span>72 DPI</span></label>
+                                    <label class="radio-pill"><input type="radio" name="pdf-dpi" value="72" checked><span>72 DPI</span></label>
                                     <label class="radio-pill"><input type="radio" name="pdf-dpi" value="100"><span>100 DPI</span></label>
-                                    <label class="radio-pill"><input type="radio" name="pdf-dpi" value="150" checked><span>150 DPI</span></label>
+                                    <label class="radio-pill"><input type="radio" name="pdf-dpi" value="150"><span>150 DPI</span></label>
                                     <label class="radio-pill"><input type="radio" name="pdf-dpi" value="300"><span>300 DPI</span></label>
                                 </div>
                             </div>
@@ -115,6 +115,10 @@
                                     <label class="checkbox-label">
                                         <input type="checkbox" id="remove-metadata">
                                         <span data-i18n="removeMetadata">Eliminar metadatos del documento</span>
+                                    </label>
+                                    <label class="checkbox-label">
+                                        <input type="checkbox" id="convert-png-to-jpeg">
+                                        <span data-i18n="convertPngToJpeg">Convertir imágenes PNG a JPEG (más compresión, pierde transparencia)</span>
                                     </label>
                                 </div>
                             </div>
