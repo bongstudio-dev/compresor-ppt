@@ -704,14 +704,11 @@ input[type=range]:active::-moz-range-thumb { transform: scale(0.95); }
     .footer { padding: 20px 0 12px; }
     .file-screen { gap: 24px; padding: 24px 16px; }
     .anim-percent { font-size: 3rem; }
-    .stats-grid { grid-template-columns: 1fr; gap: 10px; }
+    .stats-grid { grid-template-columns: 1fr; gap: 12px; }
     .stat-card { display: flex; justify-content: space-between; align-items: center; }
     .stat-label { margin-bottom: 0; }
     .file-card { flex-direction: column; text-align: center; padding: 24px; }
     .file-info { text-align: center; width: 100%; }
-    .stats-grid { grid-template-columns: 1fr; gap: 12px; }
-    .stat-card { display: flex; justify-content: space-between; align-items: center; }
-    .stat-label { margin-bottom: 0; }
     .radio-pills { flex-direction: column; }
     .radio-pill span { display: block; text-align: center; }
 }

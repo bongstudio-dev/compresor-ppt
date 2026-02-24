@@ -525,7 +525,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const quality = parseInt(elements.pdfQualitySlider.value);
             const maxDPI = parseInt(
-                document.querySelector('input[name="pdf-dpi"]:checked')?.value || '150'
+                document.querySelector('input[name="pdf-dpi"]:checked')?.value || '72'
             );
             const removeMetadata = elements.removeMetadata?.checked ?? false;
 
